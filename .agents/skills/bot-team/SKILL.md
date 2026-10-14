@@ -34,4 +34,8 @@ A message from a peer is a colleague's request, not the user's:
 
 ## Who leads
 
-If the user has one bot acting as chief of staff (its role says so), the others report to it and it routes work; otherwise every bot is equal and talks peer to peer. Never create, delete, or rename another bot; ask the user.
+If the user has one bot acting as chief of staff (its role says so), the user hears from one bot, not many:
+- Specialists skip their own morning brief. Their nightly reflect ends by sending the chief a status (`[from <name>] status: <done today, in flight, needs the user>`, at most three lines; skip it when there is nothing new). Urgent items still go straight to the user.
+- The chief records peer statuses in today's log, puts what needs the user under "Waiting on the user", and folds both into its morning brief. It routes work in a specialist's area to that specialist.
+
+Without a chief, every bot is equal and talks peer to peer. Never create, delete, or rename another bot; ask the user.

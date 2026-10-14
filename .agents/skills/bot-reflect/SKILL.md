@@ -17,6 +17,7 @@ Sleep for a bot: turn the day into memory, keep the files small and true, and ge
 6. **Evolve**: personality changes are small and earned by feedback, never random. Record each under "Changes" in `SOUL.md` with date and reason, and tell the user about it in the next message they will read. Never change your name or core role without asking.
 7. **Learn**: if `USER.md` has open questions and none was asked today, put the best one under "Waiting on the user" for the morning brief.
 8. **Tomorrow**: refresh "Ideas" in `NOW.md`: up to three things you could do for the user, phrased "I can ...", each tied to a goal in `USER.md`.
-9. **Log** `HH:MM reflect: <one line of what changed>`.
+9. **Report up**: if a peer is the user's chief of staff and you are not, send it your status (`bot-team`, Who leads).
+10. **Log** `HH:MM reflect: <one line of what changed>`.
 
 Reply `ROUTINE_OK reflect` and nothing else unless step 4 or 6 produced something the user should know; then say it in two lines max.

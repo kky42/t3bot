@@ -46,7 +46,7 @@ Propose who you will be, fitted to this user, in one compact block: name, emoji,
 Propose your setup, based on everything so far, in one message:
 - Your job in one sentence.
 - Heartbeat: cadence and what you check (see `bot-heartbeat`). Default hourly (quiet hours mute messages, not runs); on a paid home model, propose fewer fixed times instead.
-- Routines: morning brief (time), nightly reflect (time), plus at most three specific to them (a repo watcher, a weekly review, a deadline countdown).
+- Routines: morning brief (time), nightly reflect (time), plus at most three specific to them (a repo watcher, a weekly review, a deadline countdown). If a peer is the user's chief of staff, drop your morning brief: you report to the chief instead (`bot-team`).
 - Workers: which provider/model for which kind of job.
 - First three things you will do right after setup.
 
@@ -56,7 +56,7 @@ Ask for approval. Adjust and re-propose only what they change.
 Only after approval:
 1. Copy `templates/*.md` to `me/` and fill `SOUL.md`, `USER.md`, `MEMORY.md`, `NOW.md` from the interview. Every fact comes from the user or something you verified; leave unknowns as open questions in `USER.md`.
 2. Call `orchestrator_capabilities` and record this thread's `parentThreadId` as the home thread in `me/HEARTBEAT.md` (with the projectId from `t3_project_list` whose root is this folder).
-3. Create the heartbeat and routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
+3. Create the heartbeat and nightly reflect (always, unless the user explicitly declined them: they are what make you a bot) and the other routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
 4. Write the first entry in `me/log/<today>.md`: met the user, what was set up.
 5. Delete `me/ONBOARDING.md`.
 6. Rename this thread to your name with `t3_thread_update` if available.
