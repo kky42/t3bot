@@ -6,15 +6,40 @@ It works with any T3 provider that reads `AGENTS.md` or `CLAUDE.md` (Claude, Cod
 
 ## Start
 
+One folder is one bot. Keep bots side by side, never inside another bot's folder (agents also read instruction files from parent folders).
+
+### Yourself
+
 ```bash
-git clone <this repo> ~/my-bot
+git clone <this repo> ~/bots/alice
 ```
 
-1. In T3 Code, add `~/my-bot` as a project.
-2. Open a new thread in it. This thread becomes the bot's home: heartbeats and routines post here, and they run on this thread's model, so a cheap model keeps them cheap.
-3. Say hi. The bot runs a short interview and sets itself up.
+1. In T3 Code, add `~/bots/alice` as a project.
+2. Open a new thread in it. This thread becomes the bot's home: heartbeats and routines post here and run on this thread's model, so a cheap model keeps them cheap.
+3. Say hi. The bot interviews you and sets itself up.
 
-Clone again into another folder for a second bot with a different job.
+### Through any agent
+
+Give an agent running in T3 Code this repo's URL and say "set up a bot for me". The agent follows "Agent install" below, and the bot's home thread appears in T3 with the interview already started.
+
+## Agent install
+
+For an agent installing a bot for its user:
+
+1. Ask the user, in one message, for the bot's folder name (default `~/bots/<name>`) and the model for its home thread (list the enabled ones from `orchestrator_capabilities`; recommend a cheap one, since heartbeats run on it). Do not nest it inside another bot's folder.
+2. `git clone <repo url> <folder>`.
+3. `t3_project_create` with `title` = the folder name and `workspaceRoot` = the absolute folder path. Keep the returned project id.
+4. `t3_thread_launch` with that `projectId`, `title` = the folder name, the chosen `modelSelection`, and `message`:
+   ```
+   [install] Installed by <your name> for the user. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
+   ```
+5. Give the user a link to the new thread: `[<title>](t3-thread://v1/<threadId>)`. They continue the interview there.
+
+Without T3 tools, stop after step 2 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
+
+## Many bots
+
+Clone once per bot (`~/bots/alice`, `~/bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. A new bot can start from an existing bot's profile of you instead of a fresh interview.
 
 ## How it works
 
@@ -25,7 +50,7 @@ Clone again into another folder for a second bot with a different job.
 | Memory you can read and edit | `me/USER.md`, `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
 | Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`) |
 | Routines and saved skills | T3 scheduled tasks (`bot-routines`); learned skills in `.agents/skills/my-*` |
-| Chief of staff with specialist bots | `delegate_task` and `t3_thread_launch` on any provider and repo (`bot-delegate`) |
+| Chief of staff with specialist bots | Workers on any provider and repo (`bot-delegate`); other bots in their own folders (`bot-team`) |
 | Gets better over time | Nightly `bot-reflect`: consolidate memory, prune, evolve personality from feedback |
 | Approval for external actions | Permissions in `me/USER.md`; anything external or irreversible asks first |
 
@@ -33,7 +58,7 @@ Layout:
 
 ```
 AGENTS.md               the bot's kernel: identity, wake-up, rules (CLAUDE.md imports it)
-.agents/skills/bot-*    onboarding, memory, heartbeat, routines, delegation, reflection
+.agents/skills/bot-*    onboarding, memory, heartbeat, routines, delegation, reflection, team
 .claude/skills          symlink to .agents/skills
 templates/              seeds for me/
 me/                     your bot's mind; private and gitignored
