@@ -5,11 +5,13 @@ if [ ! -f me/SOUL.md ]; then echo "STATUS: NEW - run bot-onboard"; exit 0; fi
 h=$(git log -1 --format=%h 2>/dev/null)
 if grep -rqs "update: $h" me/log; then echo "STATUS: OK ($h)"
 else
-  last=$(grep -rhos "update: [0-9a-f]*" me/log | sort | tail -1 | cut -d' ' -f2)
+  last=$(cat me/log/*.md 2>/dev/null | grep -o "update: [0-9a-f]*" | tail -1 | cut -d' ' -f2)
   [ -n "$last" ] || last=$(git log -1 --format=%h --before="$(date -r me/SOUL.md +%Y-%m-%dT%H:%M:%S)")
-  echo "STATUS: UPDATED $last -> $h - follow \"After an update\" in bot-onboard before anything else"
-  git log --oneline "$last..HEAD"
-  git diff --stat "$last" HEAD -- AGENTS.md .agents templates bin
+  echo "STATUS: UPDATED ${last:-?} -> $h - follow \"After an update\" in bot-onboard before anything else"
+  if [ -n "$last" ]; then
+    git log --oneline "$last..HEAD" | head -20
+    git diff --stat "$last" HEAD -- AGENTS.md .agents templates bin
+  fi
 fi
 for f in SOUL USER NOW MEMORY; do echo "=== me/$f.md"; cat "me/$f.md" 2>/dev/null; done
 for d in $(date +%F) $(date -v-1d +%F 2>/dev/null || date -d yesterday +%F); do

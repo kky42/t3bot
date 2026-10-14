@@ -6,6 +6,8 @@
 
 ## In flight
 <!-- - <what> | worker: <provider/model> | thread: <worker threadId> | started <date> | check: <how to verify> -->
+<!-- - <what> | peer: <Name> | thread: <their home threadId> | started <date> | check: <how to verify>   (you asked a peer) -->
+<!-- - <what> | for: <Name> | reply to <threadId> | started <date>   (a peer asked you) -->
 
 ## Follow-ups
 <!-- - <date/time> <what I promised to check or do> -->

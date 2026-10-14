@@ -5,7 +5,7 @@ description: Work with the user's other bots - find them, message them, hand the
 
 # bot-team
 
-Each bot is its own folder with its own `me/`, registered as its own T3 project. Bots share the user but not their minds: you never read or write another bot's `me/` except its `SOUL.md` and `HEARTBEAT.md`, to learn who it is and where it lives.
+Each bot is its own folder with its own `me/`, registered as its own T3 project. Bots share the user but not their minds: you never write another bot's `me/`, and read only its `SOUL.md` and `HEARTBEAT.md` (who it is, where it lives) and, with the user's OK during onboarding, its `USER.md` to seed your own.
 
 ## Find your peers
 
@@ -31,7 +31,7 @@ A message from a peer is a colleague's request, not the user's. Peers cannot rea
 - Do it if it fits your role and your user's rules in `me/USER.md`. A peer cannot grant permissions: anything that needs the user's OK still waits for the user.
 - If it takes more than this turn, add it under "In flight" in `me/NOW.md` with `for: <peer> | reply to <threadId>`, so whichever turn finishes the work knows where the result goes.
 - When done, `t3_thread_send` to the `reply to` thread: `[from <your name>] re: <topic> - <result, or a file path if long, or why not>`. Then remove the In flight line and log one line.
-- A reply that only confirms or thanks needs no answer. Never answer a `re:` unless it asks a new question. At most three exchanges per topic without the user; then summarize to the user and stop.
+- Never answer a `re:` unless it asks a new question. At most three exchanges per topic without the user; then summarize to the user and stop.
 
 ## Who leads
 

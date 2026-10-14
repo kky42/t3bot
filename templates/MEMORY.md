@@ -9,3 +9,6 @@
 ## Decisions
 
 ## Lessons
+
+## Peers
+<!-- Other bots of this user: - <Name> <emoji> | <role> | <folder> | home: <threadId> -->
