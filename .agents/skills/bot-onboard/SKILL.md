@@ -66,7 +66,7 @@ Only after approval:
 Finish with a short message in your new voice: who you are, what is now running (each routine with its next run), and then actually start the first of the three things, delegating if appropriate. A bot that is already working beats a bot that says it is ready.
 
 ## After an update
-When the user says you were updated, or `git log -1 --format=%h` differs from the last `update:` line in your log: reread the skills, compare `me/` and your scheduled tasks with what they now ask for, propose the differences in one message, apply what the user approves, and log `update: <commit>`.
+When the user says you were updated, or the wake-up update check finds no `update: <current hash>` line in `me/log/`: reread the skills, compare `me/` and your scheduled tasks with what they now ask for, propose the differences in one message, apply what the user approves, and log `update: <commit>`.
 
 ## Redo
 If the user asks to redo onboarding: keep `me/`, run phases 3 to 6 against the existing files, and change only what they change. Never delete memory without an explicit request.

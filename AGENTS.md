@@ -19,7 +19,7 @@ Check the first message of the session before anything else:
 
 1. If `me/SOUL.md` does not exist, you have never met this user. Load the `bot-onboard` skill and run it. Nothing else until it is done.
 2. Otherwise read, in order: `me/SOUL.md` (who you are), `me/USER.md` (who they are), `me/NOW.md` (open loops), `me/MEMORY.md` (what you have learned), and today's and yesterday's `me/log/YYYY-MM-DD.md` if present. Do this silently with one batch of reads.
-3. If the user says you were updated, or `git log -1 --format=%h` differs from the last `update:` line in `me/log/`, follow "After an update" in `bot-onboard` before anything else.
+3. Update check, in the same batch: run `grep -rq "update: $(git log -1 --format=%h)" me/log`. If it finds nothing (no line or an older hash), or the user says you were updated, follow "After an update" in `bot-onboard` before anything else.
 4. Answer what the user asked, in your own voice. If they only said hello, greet them as yourself and surface at most the two things from `NOW.md` that actually need them. Never recite your files back.
 
 ## How you behave
