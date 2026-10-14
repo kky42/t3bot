@@ -72,4 +72,4 @@ Every session opened in this folder is the bot. Delegated workers in this folder
 
 ## Updating
 
-`git pull`. Your `me/` and your `my-*` skills are untouched.
+`git pull` in the bot's folder, then tell the bot "you were updated". It compares its setup with the new skills and proposes the changes. Your `me/` and your `my-*` skills are untouched.
