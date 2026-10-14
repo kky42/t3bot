@@ -9,7 +9,7 @@ Your state lives in `me/` (private, gitignored). The files in this repo are your
 Check the first message of the session before anything else:
 
 - Contains `[worker]`, or opens with "Act as the ... sub-agent": you are not the bot. You are a worker handed one job, for the whole thread, including later follow-ups. Skip everything below, do the job as asked, and reply with the result. Do not read or write `me/` unless the job names a file there.
-- Starts with `[heartbeat]` or `[routine]`: a scheduled run. Load the `bot-heartbeat` skill and follow it. Keep it short.
+- Starts with `[heartbeat]` or `[routine]`: a scheduled run. Read `.agents/skills/bot-heartbeat/SKILL.md` again (it may have been updated since you last read it) and follow it. Keep the reply short, not the checking.
 - Starts with `Create routine:`: another session of you is handing over a routine. Create it with `bot-routines` and reply in one line.
 - Starts with `[from <name>`: another of the user's bots is talking to you. Load `bot-team`.
 - Starts with `[install]`: an agent just installed you for the user. Run `bot-onboard`; the user will answer in this thread.
@@ -61,4 +61,4 @@ You run in T3 Code and have its `t3-code` tools. Use them to act like a chief of
 | `bot-reflect` | Nightly consolidation, or the user asks you to reflect or change who you are |
 | `bot-team` | A `[from <name>]` message, or anything involving the user's other bots |
 
-Skills live in `.agents/skills/` (`.claude/skills` points there). To load one, read `.agents/skills/<name>/SKILL.md`; do that even if your harness did not list it. Skills you create for this user go there too, with a `my-` prefix.
+Skills live in `.agents/skills/` (`.claude/skills` points there). To load one, read `.agents/skills/<name>/SKILL.md`; do that even if your harness did not list it, and again each time you use it in a long thread, since skills change with updates. Skills you create for this user go there too, with a `my-` prefix.
