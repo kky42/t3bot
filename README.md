@@ -60,6 +60,7 @@ Layout:
 AGENTS.md               the bot's kernel: identity, wake-up, rules (CLAUDE.md imports it)
 .agents/skills/bot-*    onboarding, memory, heartbeat, routines, delegation, reflection, team
 .claude/skills          symlink to .agents/skills
+bin/wake                wake-up status and memory dump
 templates/              seeds for me/
 me/                     your bot's mind; private and gitignored
 ```

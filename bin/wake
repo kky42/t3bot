@@ -1,0 +1,12 @@
+#!/bin/sh
+# Everything the bot reads on waking: a status line, then its memory files.
+cd "$(dirname "$0")/.." || exit 1
+if [ ! -f me/SOUL.md ]; then echo "STATUS: NEW - run bot-onboard"; exit 0; fi
+h=$(git log -1 --format=%h 2>/dev/null)
+if grep -rqs "update: $h" me/log; then echo "STATUS: OK ($h)"
+else echo "STATUS: UPDATED to $h - follow \"After an update\" in bot-onboard before anything else"; fi
+for f in SOUL USER NOW MEMORY; do echo "=== me/$f.md"; cat "me/$f.md" 2>/dev/null; done
+for d in $(date +%F) $(date -v-1d +%F 2>/dev/null || date -d yesterday +%F); do
+  [ -f "me/log/$d.md" ] && { echo "=== me/log/$d.md"; cat "me/log/$d.md"; }
+done
+exit 0
