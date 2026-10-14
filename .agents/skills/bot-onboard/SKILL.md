@@ -16,28 +16,34 @@ Keep `me/ONBOARDING.md` updated after every user reply: phase reached, and raw n
 ## Phases
 
 ### 1. Hello
-Create `me/` and `me/log/`. If the first message started with `[install]`, treat its notes about the user as leads: confirm them in the interview instead of asking from scratch. In one short message: you are their new bot, still nameless; you live in this folder and wake up whenever they open a thread here; you remember them in plain files under `me/` they can read and edit; you can work while they are away and hand jobs to other agents. Then open the brain dump:
+Create `me/` and `me/log/`. Then check for `~/.t3codes/USER.md`, the profile all of this user's bots share.
+
+**It exists: you already know the user.** Read it, and find your peers (`bot-team`; no permission needed, they are the user's own bots). Never ask again what the profile answers. In one short message: greet them by name, say you know them from their other bots (name them and their roles), and ask the one question that matters: what do they want this bot for? Then skip to phase 3 in its short form.
+
+**It does not exist: this is the user's first bot.** If the first message started with `[install]`, treat its notes as leads: confirm them instead of asking from scratch. In one short message: you are their new bot, still nameless; you live in this folder and wake up whenever they open a thread here; you remember them in plain files they can read and edit; you can work while they are away and hand jobs to other agents. Then open the brain dump:
 
 > Tell me about yourself, messy is fine (dictation works): what you do, what you are working on, what you want to achieve in the next few months, what eats your time, and how you like to be talked to.
 
-### 2. Look around (ask first)
+### 2. Look around (first bot only, ask first)
 Ask once whether you may look around to save them typing. If yes, gather silently and in parallel:
 - `orchestrator_capabilities`: which providers and models are available and enabled (your possible workers).
-- `t3_project_list`: their projects and repos, and their other bots (`bot-team`, Find your peers). If a peer exists, offer to copy its `me/USER.md` as your starting point instead of asking again; still confirm what is specific to you.
+- `t3_project_list`: their projects and repos.
 - If present, read-only: `~/.hippo/MEMORY.md`, `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.pi/agent/AGENTS.md` (existing memory or rules about the user).
 - `date` and the system timezone.
 
 Check that any path you mention exists (`ls`) before reporting it; T3 projects can point at moved folders. Report what you learned in at most five lines, as facts you will confirm, not as a dump. Never copy secrets.
 
 ### 3. Grill
-Two or three rounds, three questions max each, aimed only at real gaps. Cover, in order of importance:
+**Short form (shared profile exists):** one round, three questions max, only about this bot: its job and what success looks like, what it may do alone in that area beyond the profile's permissions, and the sources or repos it should watch. Skip anything the profile or the user's first answer already covers; if nothing is missing, skip the round.
+
+**Full form (first bot):** two or three rounds, three questions max each, aimed only at real gaps. Cover, in order of importance:
 1. What matters most right now (the top one to three goals or projects, with deadlines).
 2. Permissions: what you may do alone, what always needs their OK.
 3. Workers and cost: which models to use for routine work vs judgment work, how many in parallel, any provider to avoid.
 4. Rhythm: working hours, quiet hours, when they want a morning brief and whether they want an evening wrap.
 5. Proactivity: how often to hear from you, what is worth interrupting for, what they never want.
 
-Stop grilling when you could write `me/USER.md` well. Say so.
+Stop grilling when you could write the profile well. Say so.
 
 ### 4. Personality
 Propose who you will be, fitted to this user, in one compact block: name, emoji, role (one line), vibe (three adjectives), voice (two or three rules), one quirk. If this folder's name looks like a name (`~/bots/alice`), propose that name first. Make the role distinct from any peer's. Offer one alternative. They can pick, edit, or name you themselves. Their words win.
@@ -54,7 +60,7 @@ Ask for approval. Adjust and re-propose only what they change.
 
 ### 6. Build
 Only after approval:
-1. Copy `templates/*.md` to `me/` and fill `SOUL.md`, `USER.md`, `MEMORY.md`, `NOW.md` from the interview. Every fact comes from the user or something you verified; leave unknowns as open questions in `USER.md`.
+1. Copy `templates/*.md` except `USER.md` to `me/` and fill `SOUL.md`, `MEMORY.md`, `NOW.md` from the interview. The profile: if `~/.t3codes/USER.md` does not exist, write it from `templates/USER.md`; add what you learned to it either way; then `ln -s ~/.t3codes/USER.md me/USER.md`. Facts only this bot's job needs go under "Role notes" in `me/MEMORY.md`, not the shared profile. Every fact comes from the user or something you verified; leave unknowns as open questions in the profile.
 2. Call `orchestrator_capabilities` and record this thread's `parentThreadId` as the home thread in `me/HEARTBEAT.md` (with the projectId from `t3_project_list` whose root is this folder).
 3. Create the heartbeat and nightly reflect (the proposal always includes them; skip one only if the user declined it: they are what make you a bot) and the other routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
 4. Write the first entry in `me/log/<today>.md`: met the user, what was set up, and `update: <git log -1 --format=%h>`.
@@ -71,6 +77,8 @@ When `bin/wake` says `STATUS: UPDATED <old> -> <new>`, or the user says you were
 2. For each change, check whether `me/` or your scheduled tasks (`list_scheduled_tasks`) still match it. Rules about peers apply to the peers you actually have.
 3. Propose the differences in one message, or say plainly that nothing in your setup is affected and why. Apply what the user approves.
 4. Log `update: <new>` so you do not repeat this.
+
+If `bin/wake` prints `PROFILE:` (`me/USER.md` is a plain file, from before the shared profile): when the shared file does not exist, move yours there; when it does, add the facts it lacks (ask the user about conflicts) and remove yours. Then `ln -s ~/.t3codes/USER.md me/USER.md`. Move facts that only matter to your role into "Role notes" in `me/MEMORY.md`.
 
 ## Redo
 If the user asks to redo onboarding: keep `me/`, run phases 3 to 6 against the existing files, and change only what they change. Never delete memory without an explicit request.

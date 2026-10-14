@@ -43,7 +43,7 @@ Without T3 tools, stop after step 3 and tell the user to add the folder as a pro
 
 ## Many bots
 
-Clone once per bot (`~/bots/alice`, `~/bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. A new bot can start from an existing bot's profile of you instead of a fresh interview.
+Clone once per bot (`~/bots/alice`, `~/bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. Your profile lives once, in `~/.t3codes/USER.md`, linked from every bot: the first bot interviews you, later bots only ask what their own job needs, and a correction told to any bot reaches all of them.
 
 ## How it works
 
@@ -51,7 +51,7 @@ Clone once per bot (`~/bots/alice`, `~/bots/bob`), each with its own job, memory
 |---|---|
 | A Bot with a name, avatar, description | `me/SOUL.md`, written with you during onboarding |
 | Brain dump, grill-me, reverse-prompted setup | `bot-onboard` skill, first run |
-| Memory you can read and edit | `me/USER.md`, `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
+| Memory you can read and edit | `~/.t3codes/USER.md` (your profile, shared by all your bots), `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
 | Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`) |
 | Routines and saved skills | T3 scheduled tasks (`bot-routines`); learned skills in `.agents/skills/my-*` |
 | Chief of staff with specialist bots | Workers on any provider and repo (`bot-delegate`); other bots in their own folders (`bot-team`) |
@@ -73,7 +73,7 @@ Every session opened in this folder is the bot. Delegated workers in this folder
 
 ## Privacy
 
-`me/` is gitignored so pulling updates never touches your bot's memory. To back it up with git, keep a private fork and remove `me/` from `.gitignore`. Never push a bot's `me/` to a public repo.
+`me/` is gitignored so pulling updates never touches your bot's memory, and your profile lives outside every repo in `~/.t3codes/`. To back it up with git, keep a private fork and remove `me/` from `.gitignore`. Never push a bot's `me/` to a public repo.
 
 ## Updating
 

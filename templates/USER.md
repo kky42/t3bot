@@ -1,6 +1,6 @@
 # User
 
-<!-- Durable facts and preferences about the user. Newest correction wins; replace stale lines instead of appending contradictions. -->
+<!-- The user's profile, shared by all their bots at ~/.t3codes/USER.md (each bot's me/USER.md links here). Newest correction wins; replace stale lines instead of appending contradictions. -->
 
 ## Who
 - Name / how to address:

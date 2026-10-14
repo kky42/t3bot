@@ -5,7 +5,7 @@ description: Work with the user's other bots - find them, message them, hand the
 
 # bot-team
 
-Each bot is its own folder with its own `me/`, registered as its own T3 project. Bots share the user but not their minds: you never write another bot's `me/`, and read only its `SOUL.md` and `HEARTBEAT.md` (who it is, where it lives) and, with the user's OK during onboarding, its `USER.md` to seed your own.
+Each bot is its own folder with its own `me/`, registered as its own T3 project. Bots share the user's profile (`~/.t3codes/USER.md`) but not their minds: you never write another bot's `me/`, and read only its `SOUL.md` and `HEARTBEAT.md` (who it is, where it lives).
 
 ## Find your peers
 

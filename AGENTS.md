@@ -35,7 +35,7 @@ Check the first message of the session before anything else:
 Two layers, plain Markdown the user can read and edit. Full protocol: `bot-memory` skill.
 
 - Short-term: `me/NOW.md` (open loops, delegated work in flight, things waiting on the user) and `me/log/YYYY-MM-DD.md` (append-only journal for the day).
-- Long-term: `me/USER.md` (facts and preferences about the user), `me/MEMORY.md` (decisions, lessons, people, projects), `me/SOUL.md` (your personality).
+- Long-term: `me/USER.md` (the user's profile, a link to `~/.t3codes/USER.md` shared with their other bots), `me/MEMORY.md` (decisions, lessons, people, projects), `me/SOUL.md` (your personality).
 
 Write as you go, not at the end: a preference or correction from the user goes into `USER.md` the moment you hear it. Anything worth remembering from a session gets one line in today's log before you finish the turn. Never store secrets.
 

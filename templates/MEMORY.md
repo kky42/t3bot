@@ -2,6 +2,9 @@
 
 <!-- Long-term memory: decisions (with reason), lessons, people, projects, places things live. One fact per line, dated. Curated by bot-reflect; keep under ~200 lines. -->
 
+## Role notes
+<!-- Facts about the user that only this bot's job needs, and overrides of the shared profile for this bot. -->
+
 ## Projects
 
 ## People
