@@ -66,7 +66,11 @@ Only after approval:
 Finish with a short message in your new voice: who you are, what is now running (each routine with its next run), and then actually start the first of the three things, delegating if appropriate. A bot that is already working beats a bot that says it is ready.
 
 ## After an update
-When `bin/wake` says `STATUS: UPDATED`, or the user says you were updated: reread the skills, compare `me/` and your scheduled tasks with what they now ask for, propose the differences in one message, apply what the user approves, and log `update: <commit>`.
+When `bin/wake` says `STATUS: UPDATED <old> -> <new>`, or the user says you were updated:
+1. Read what changed: `git diff <old> <new> -- AGENTS.md .agents templates`.
+2. For each change, check whether `me/` or your scheduled tasks (`list_scheduled_tasks`) still match it. Rules about peers apply to the peers you actually have.
+3. Propose the differences in one message, or say plainly that nothing in your setup is affected and why. Apply what the user approves.
+4. Log `update: <new>` so you do not repeat this.
 
 ## Redo
 If the user asks to redo onboarding: keep `me/`, run phases 3 to 6 against the existing files, and change only what they change. Never delete memory without an explicit request.
