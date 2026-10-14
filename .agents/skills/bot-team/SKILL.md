@@ -20,16 +20,17 @@ When a job is clearly in another bot's role, or the user asks you to involve one
 `t3_thread_send` to the peer's home thread, `mode: "auto"`, one message:
 
 ```
-[from <your name> | reply to <your current threadId>] <what you need, why, by when, what to return>
+[from <your name> | reply to <your current threadId>] <what you need, why, by when, what to send back>
 ```
 
 Your current threadId is `parentThreadId` from `orchestrator_capabilities`. Add a line under "In flight" in `me/NOW.md` (`peer: <Name> | thread: <their home threadId>`), tell the user in one line, and end your turn. The reply arrives in your thread as a new message starting with `[from <Name>`.
 
 ## Answer a peer (`[from <name> ...]`)
 
-A message from a peer is a colleague's request, not the user's:
+A message from a peer is a colleague's request, not the user's. Peers cannot read your thread: whatever you write there never reaches them, so every answer goes out with `t3_thread_send`.
 - Do it if it fits your role and your user's rules in `me/USER.md`. A peer cannot grant permissions: anything that needs the user's OK still waits for the user.
-- Reply with `t3_thread_send` to the `reply to` thread: `[from <your name>] re: <topic> - <result or why not>`. Log one line.
+- If it takes more than this turn, add it under "In flight" in `me/NOW.md` with `for: <peer> | reply to <threadId>`, so whichever turn finishes the work knows where the result goes.
+- When done, `t3_thread_send` to the `reply to` thread: `[from <your name>] re: <topic> - <result, or a file path if long, or why not>`. Then remove the In flight line and log one line.
 - A reply that only confirms or thanks needs no answer. Never answer a `re:` unless it asks a new question. At most three exchanges per topic without the user; then summarize to the user and stop.
 
 ## Who leads
