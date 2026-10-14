@@ -19,7 +19,8 @@ Then:
 2. `schedule_task` with `title` `<bot name>: <routine name>`, `bindToCurrentThread: true`, and a prompt in this shape:
    ```
    [routine] <name>
-   <instructions, or "Follow the my-<skill> skill.">
+   Read .agents/skills/bot-heartbeat/SKILL.md (the [routine] part) first.
+   <instructions, or "Read .agents/skills/my-<skill>/SKILL.md and follow it.">
    Report bar: <what is worth reporting>
    Never: <what needs approval>
    ```
