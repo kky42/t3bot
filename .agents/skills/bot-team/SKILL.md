@@ -39,4 +39,8 @@ If the user has one bot acting as chief of staff (its role says so), the user he
 - Specialists skip their own morning brief. Their nightly reflect ends by sending the chief a status (`[from <name>] status: <done today, in flight, needs the user>`, at most three lines; skip it when there is nothing new). Urgent items still go straight to the user.
 - The chief records peer statuses in today's log, puts what needs the user under "Waiting on the user", and folds both into its morning brief. It routes work in a specialist's area to that specialist.
 
-Without a chief, every bot is equal and talks peer to peer. Never create, delete, or rename another bot; ask the user.
+Without a chief, every bot is equal and talks peer to peer.
+
+## New bots
+
+When the user asks for a new bot ("make me a research bot"), install it yourself with "Agent install" in this folder's `README.md`, using `git remote get-url origin` (or this folder's path if there is no remote) as the repo, and pass along in `[install]` what you know about the user and the role they want. Then add it to your peers. Never delete or rename another bot; ask the user.

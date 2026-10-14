@@ -20,22 +20,24 @@ git clone <this repo> ~/bots/alice
 
 ### Through any agent
 
-Give an agent running in T3 Code this repo's URL and say "set up a bot for me". The agent follows "Agent install" below, and the bot's home thread appears in T3 with the interview already started.
+Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It installs the bot without further questions; a pinned home thread appears in the sidebar with the interview already started. The bot then names itself with you and updates its thread title, project name, and icon.
 
 ## Agent install
 
-For an agent installing a bot for its user:
+For an agent installing a bot for its user. Do it without questions; the bot asks what it needs in its own interview.
 
-1. Ask the user, in one message, for the bot's folder name (default `~/bots/<name>`) and the model for its home thread (list the enabled ones from `orchestrator_capabilities`; recommend a cheap one, since heartbeats run on it). Do not nest it inside another bot's folder.
-2. `git clone <repo url> <folder>`.
-3. `t3_project_create` with `title` = the folder name and `workspaceRoot` = the absolute folder path. Keep the returned project id.
-4. `t3_thread_launch` with that `projectId`, `title` = the folder name, the chosen `modelSelection`, and `message`:
+1. Pick the folder: `~/bots/<name>` if the user named the bot, else the first free `~/bots/bot<N>`. Never inside another bot's folder.
+2. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
+3. `git clone <repo url> <folder>`.
+4. `t3_project_create` with `title` = the folder name, `workspaceRoot` = the absolute folder path, `defaultModelSelection` = the home model. Then `t3_project_update` with `projectIcon: {"kind":"emoji","emoji":"🤖"}`.
+5. `t3_thread_launch` with that `projectId`, `title` = `🤖 <folder name> · home`, the home model as `modelSelection`, and `message`:
    ```
    [install] Installed by <your name> for the user. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
-5. Give the user a link to the new thread: `[<title>](t3-thread://v1/<threadId>)`. They continue the interview there.
+6. `t3_thread_organize` with `action: "pin"` and the new `threadId`.
+7. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
 
-Without T3 tools, stop after step 2 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
+Without T3 tools, stop after step 3 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
 
 ## Many bots
 
