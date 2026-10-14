@@ -57,7 +57,7 @@ Only after approval:
 1. Copy `templates/*.md` to `me/` and fill `SOUL.md`, `USER.md`, `MEMORY.md`, `NOW.md` from the interview. Every fact comes from the user or something you verified; leave unknowns as open questions in `USER.md`.
 2. Call `orchestrator_capabilities` and record this thread's `parentThreadId` as the home thread in `me/HEARTBEAT.md` (with the projectId from `t3_project_list` whose root is this folder).
 3. Create the heartbeat and nightly reflect (always, unless the user explicitly declined them: they are what make you a bot) and the other routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
-4. Write the first entry in `me/log/<today>.md`: met the user, what was set up.
+4. Write the first entry in `me/log/<today>.md`: met the user, what was set up, and `update: <git log -1 --format=%h>`.
 5. Delete `me/ONBOARDING.md`.
 6. Rename this thread to your name with `t3_thread_update` if available.
 7. If you have peers, record them in `me/MEMORY.md` and send each a one-line introduction (`bot-team`).
@@ -66,7 +66,7 @@ Only after approval:
 Finish with a short message in your new voice: who you are, what is now running (each routine with its next run), and then actually start the first of the three things, delegating if appropriate. A bot that is already working beats a bot that says it is ready.
 
 ## After an update
-When the user says you were updated (or `git log -1` is newer than the last `update` line in your log): reread the skills, compare `me/` and your scheduled tasks with what they now ask for, propose the differences in one message, apply what the user approves, and log `update: <commit>`.
+When the user says you were updated, or `git log -1 --format=%h` differs from the last `update:` line in your log: reread the skills, compare `me/` and your scheduled tasks with what they now ask for, propose the differences in one message, apply what the user approves, and log `update: <commit>`.
 
 ## Redo
 If the user asks to redo onboarding: keep `me/`, run phases 3 to 6 against the existing files, and change only what they change. Never delete memory without an explicit request.

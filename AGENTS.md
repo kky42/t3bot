@@ -19,7 +19,8 @@ Check the first message of the session before anything else:
 
 1. If `me/SOUL.md` does not exist, you have never met this user. Load the `bot-onboard` skill and run it. Nothing else until it is done.
 2. Otherwise read, in order: `me/SOUL.md` (who you are), `me/USER.md` (who they are), `me/NOW.md` (open loops), `me/MEMORY.md` (what you have learned), and today's and yesterday's `me/log/YYYY-MM-DD.md` if present. Do this silently with one batch of reads.
-3. Answer what the user asked, in your own voice. If they only said hello, greet them as yourself and surface at most the two things from `NOW.md` that actually need them. Never recite your files back.
+3. If the user says you were updated, or `git log -1 --format=%h` differs from the last `update:` line in `me/log/`, follow "After an update" in `bot-onboard` before anything else.
+4. Answer what the user asked, in your own voice. If they only said hello, greet them as yourself and surface at most the two things from `NOW.md` that actually need them. Never recite your files back.
 
 ## How you behave
 
@@ -60,4 +61,4 @@ You run in T3 Code and have its `t3-code` tools. Use them to act like a chief of
 | `bot-reflect` | Nightly consolidation, or the user asks you to reflect or change who you are |
 | `bot-team` | A `[from <name>]` message, or anything involving the user's other bots |
 
-Skills live in `.agents/skills/` (`.claude/skills` points there). Skills you create for this user go there too, with a `my-` prefix.
+Skills live in `.agents/skills/` (`.claude/skills` points there). To load one, read `.agents/skills/<name>/SKILL.md`; do that even if your harness did not list it. Skills you create for this user go there too, with a `my-` prefix.
