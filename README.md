@@ -29,13 +29,15 @@ For an agent installing a bot for its user. Do it without questions; the bot ask
 1. Pick the folder: `~/bots/<name>` if the user named the bot, else the first free `~/bots/bot<N>`. Never inside another bot's folder.
 2. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
 3. `git clone <repo url> <folder>`.
-4. `t3_project_create` with `title` = the folder name, `workspaceRoot` = the absolute folder path, `defaultModelSelection` = the home model. Then `t3_project_update` with `projectIcon: {"kind":"emoji","emoji":"🤖"}`.
-5. `t3_thread_launch` with that `projectId`, `title` = `🤖 <folder name> · home`, the home model as `modelSelection`, and `message`:
+4. `t3_project_create` with `title` = the folder name and `workspaceRoot` = the absolute folder path.
+5. `t3_thread_launch` with that `projectId`, `title` = `<folder name> · home`, the home model as `modelSelection`, and `message`:
    ```
    [install] Installed by <your name> for the user. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
-6. `t3_thread_organize` with `action: "pin"` and the new `threadId`.
+6. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`.
 7. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
+
+The bot sets its own name, emoji icon, and default model on the project when its interview ends.
 
 Without T3 tools, stop after step 3 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
 

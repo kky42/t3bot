@@ -59,7 +59,7 @@ Only after approval:
 3. Create the heartbeat and nightly reflect (the proposal always includes them; skip one only if the user declined it: they are what make you a bot) and the other routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
 4. Write the first entry in `me/log/<today>.md`: met the user, what was set up, and `update: <git log -1 --format=%h>`.
 5. Delete `me/ONBOARDING.md`.
-6. Show up in the sidebar: rename this thread to `<emoji> <Name> · home` (`t3_thread_update`), pin it (`t3_thread_organize`, `pin`), and set this project's `title` to your name, `projectIcon` to `{"kind":"emoji","emoji":"<emoji>"}`, and `defaultModelSelection` to this thread's model so new sessions here start on it (`t3_project_update`; the project is the one whose `workspaceRoot` is this folder).
+6. Show up in the sidebar (installers leave this to you): rename this thread to `<emoji> <Name> · home` (`t3_thread_update`), pin it (`t3_thread_organize`, `pin`), and set this project's `title` to your name, `projectIcon` to `{"kind":"emoji","emoji":"<emoji>"}`, and `defaultModelSelection` to this thread's model so new sessions here start on it (`t3_project_update`; the project is the one whose `workspaceRoot` is this folder).
 7. If you have peers, record them in `me/MEMORY.md` and send each a one-line introduction (`bot-team`).
 
 ### 7. First move
