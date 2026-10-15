@@ -44,7 +44,7 @@ if [ "$mode" != --cadence ]; then
     nt=$(printf '%s\n' "$nl" | sed -n 's/^- Next: *\([0-9]\{4\}-[0-9][0-9]-[0-9][0-9]\)[T ]\([0-9][0-9]:[0-9][0-9]\).*/\1 \2/p')
     n=$(date -j -f "%Y-%m-%d %H:%M:%S" "$nt:00" +%s 2>/dev/null || date -d "$nt" +%s 2>/dev/null)
     if [ -z "$nt" ] || [ -z "$n" ]; then echo "NEXT: unreadable, using the backstop - write \"- Next: YYYY-MM-DDTHH:MM <reason>\""
-    elif section Routines me/HEARTBEAT.md | grep -q "${nt#* }"; then echo "NEXT: ${nt#* } is a routine's run time, using the backstop - the routine wakes you itself; pick your own next reason to act"
+    elif section Routines me/HEARTBEAT.md | grep -v '^- Next:' | grep -q -E "(^|[^0-9:])${nt#* }([^0-9:]|$)"; then echo "NEXT: ${nt#* } is a routine's run time, using the backstop - the routine wakes you itself; pick your own next reason to act"
     elif [ "$n" -gt "$now" ]; then nextmin=$(( (n - now + 59) / 60 )); fi
   fi
 fi
