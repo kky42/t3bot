@@ -1,26 +1,71 @@
 #!/bin/sh
 # Phone escalation via Apple Reminders (iCloud → iPhone banner + sound). Mac-iPhone only; other devices unsupported.
-#   bin/nudge <title> [lead-minutes]   (lead defaults to 15; iCloud sync needs the head start)
-# Opt-in by judgment (bot-nudge SKILL.md): only for urgent, time-critical events. Hard cap: 2 per bot per day.
+#   bin/nudge <title> [lead-minutes]   (lead 10-120, default 15; iCloud sync needs the head start)
+# Opt-in (bot-nudge SKILL.md): only for qualifying events. Caps: 2 per bot per day, 4 per fleet per day,
+# and none within 10 minutes of the last fleet nudge. Output: "NUDGE: sent ..." or "NUDGE: FAIL - <reason>" (exit 1).
 cd "$(dirname "$0")/.." || exit 1
-title="$1"; lead="${2:-15}"
-case "$lead" in ''|*[!0-9]*) echo "NUDGE: FAIL - lead must be a number of minutes"; exit 1;; esac
-[ "$lead" -ge 3 ] || { echo "NUDGE: FAIL - lead under 3min arrives past due (sync latency); use 15"; exit 1; }
-[ -n "$title" ] || { echo "NUDGE: FAIL - usage: bin/nudge <title> [lead-minutes]"; exit 1; }
-today=$(date '+%Y-%m-%d')
-count=$(cat me/.nudge-log 2>/dev/null | awk -v d="$today" '$0 ~ "^- " d " " {c++} END{print c+0}')
-[ "$count" -ge 2 ] && { echo "NUDGE: FAIL - daily cap (2) reached today; tell the user in-thread instead"; exit 1; }
+fail() { printf 'NUDGE: FAIL - %s\n' "$1"; exit 1; }
+title=$(printf '%s' "$1" | tr '\r\n' '  '); lead="${2:-15}"
+case "$lead" in ''|*[!0-9]*) fail "lead must be a number of minutes";; esac
+[ "$lead" -ge 10 ] || fail "lead under 10min arrives past due (sync latency) and iOS drops it; use 15"
+[ "$lead" -le 120 ] || fail "lead over 120min is not an escalation; tell the user in-thread instead"
+[ -n "$title" ] || fail "usage: bin/nudge <title> [lead-minutes]"
+[ -d me ] || fail "no me/ folder; run from a bot folder"
+log=me/.nudge-log
+fleet="${T3CODES:-$HOME/.t3codes}/.nudge-log"
+now=$(date +%s); today=$(date '+%Y-%m-%d'); hm=$(date '+%H:%M')
+count_today() { awk -v d="$today" 'index($0, "- " d " ") == 1 {c++} END{print c+0}' "$1" 2>/dev/null || echo 0; }
+[ "$(count_today "$log")" -ge 2 ] && fail "daily cap (2 per bot) reached today; tell the user in-thread instead"
+[ "$(count_today "$fleet")" -ge 4 ] && fail "fleet daily cap (4) reached today; tell the user in-thread instead"
+last=$(tail -n 1 "$fleet" 2>/dev/null | sed -n 's/^- \([0-9]\{4\}-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]\).*/\1/p')
+if [ -n "$last" ]; then
+  last_s=$(date -j -f '%Y-%m-%d %H:%M:%S' "$last:00" +%s 2>/dev/null)
+  if [ -n "$last_s" ] && [ $((now - last_s)) -lt 600 ]; then
+    fail "another bot nudged at $last (under 10min ago); add to that thread instead"
+  fi
+fi
 bot=$(sed -n 's/^- Name: *//p' me/SOUL.md 2>/dev/null | head -1); bot=${bot:-$(basename "$PWD")}
-fire=$(date -v+${lead}M '+%Y-%m-%d %H:%M:%S' 2>/dev/null) || { echo "NUDGE: FAIL - BSD date required (macOS)"; exit 1; }
+list=$(sed -n 's/^- Nudge list: *//p' me/USER.md 2>/dev/null | head -1 | tr -d '\r' | sed 's/[[:space:]]*$//')
+# Log before creating: a failed create still consumes the cap.
+line="- $today $hm | $bot | $title"
+{ printf '%s\n' "$line" >> "$log"; } 2>/dev/null || fail "cannot write $log; refusing to nudge without counting it"
+{ mkdir -p "$(dirname "$fleet")" && printf '%s\n' "$line" >> "$fleet"; } 2>/dev/null \
+  || printf 'NUDGE: WARN - cannot write fleet log %s; fleet cap not recorded\n' "$fleet" >&2
+name="$bot: $title — 收到请回"
 body="Sent by $bot at $(date '+%Y-%m-%d %H:%M:%S')"
-id=$(osascript - "$bot" "$title" "$fire" "$body" <<'EOF'
+# The fire date is computed inside AppleScript: date strings from the shell are misparsed on some locales.
+out=$(osascript - "$list" "$lead" "$name" "$body" 2>&1 <<'EOF'
 on run argv
+  set listName to item 1 of argv
+  set fireDate to (current date) + ((item 2 of argv) as integer) * minutes
   tell application "Reminders"
-    make new reminder in list "提醒" with properties {name:(item 1 of argv) & ": " & (item 2 of argv) & " — 收到请回", due date:date (item 3 of argv), body:(item 4 of argv)}
+    if listName is "" then
+      set targetList to default list
+    else
+      if not (exists list listName) then return "ERROR: list not found: " & listName
+      set targetList to list listName
+    end if
+    set r to make new reminder in targetList with properties {name:item 3 of argv, due date:fireDate, body:item 4 of argv}
+    set got to due date of r
+    set rid to id of r
+    set drift to got - fireDate
+    if drift < 0 then set drift to -drift
+    if drift > 120 then
+      delete r
+      return "ERROR: due date drifted " & drift & "s (got " & (got as string) & "); reminder deleted"
+    end if
   end tell
+  return rid
 end run
 EOF
-) || { echo "NUDGE: FAIL - osascript error (check Automation permission for the calling app)"; exit 1; }
-case "$id" in *x-apple-reminder://*) ;; *) echo "NUDGE: FAIL - unexpected osascript output: $id"; exit 1;; esac
-echo "- $today $(date '+%H:%M') $title" >> me/.nudge-log
-echo "NUDGE: sent ($bot, fires in ${lead}m) $id"
+) || case "$out" in
+  *-1743*|*"Not authorized"*|*"not allowed"*) fail "not authorized to control Reminders (grant Automation permission to the calling app)";;
+  *) fail "osascript error: $(printf '%s' "$out" | tr '\n' ' ')";;
+esac
+case "$out" in
+  "ERROR: list not found"*) fail "Reminders list not found: \"$list\" (fix '- Nudge list:' in me/USER.md)";;
+  ERROR:*) fail "${out#ERROR: }";;
+  *x-apple-reminder://*) ;;
+  *) fail "unexpected osascript output: $out";;
+esac
+printf 'NUDGE: sent (%s, fires in %sm) %s\n' "$bot" "$lead" "$out"
