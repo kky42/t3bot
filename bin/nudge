@@ -8,7 +8,7 @@ case "$lead" in ''|*[!0-9]*) echo "NUDGE: FAIL - lead must be a number of minute
 [ "$lead" -ge 3 ] || { echo "NUDGE: FAIL - lead under 3min arrives past due (sync latency); use 15"; exit 1; }
 [ -n "$title" ] || { echo "NUDGE: FAIL - usage: bin/nudge <title> [lead-minutes]"; exit 1; }
 today=$(date '+%Y-%m-%d')
-count=$(awk -v d="$today" '$0 ~ "^- " d " " {c++} END{print c+0}' me/.nudge-log 2>/dev/null)
+count=$(cat me/.nudge-log 2>/dev/null | awk -v d="$today" '$0 ~ "^- " d " " {c++} END{print c+0}')
 [ "$count" -ge 2 ] && { echo "NUDGE: FAIL - daily cap (2) reached today; tell the user in-thread instead"; exit 1; }
 bot=$(sed -n 's/^- Name: *//p' me/SOUL.md 2>/dev/null | head -1); bot=${bot:-$(basename "$PWD")}
 fire=$(date -v+${lead}M '+%Y-%m-%d %H:%M:%S' 2>/dev/null) || { echo "NUDGE: FAIL - BSD date required (macOS)"; exit 1; }
@@ -21,6 +21,6 @@ on run argv
 end run
 EOF
 ) || { echo "NUDGE: FAIL - osascript error (check Automation permission for the calling app)"; exit 1; }
-case "$id" in reminder://*|x-apple-reminder://*) ;; *) echo "NUDGE: FAIL - unexpected osascript output: $id"; exit 1;; esac
+case "$id" in *x-apple-reminder://*) ;; *) echo "NUDGE: FAIL - unexpected osascript output: $id"; exit 1;; esac
 echo "- $today $(date '+%H:%M') $title" >> me/.nudge-log
 echo "NUDGE: sent ($bot, fires in ${lead}m) $id"
