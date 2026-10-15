@@ -33,12 +33,12 @@ For an agent installing a bot for its user. Ask only for the role, the name, and
 2. Folder: `~/t3bots/<slug>`, where `<slug>` is the name in lowercase with spaces as hyphens and only `a-z`, `0-9`, `-` kept. If that folder exists, ask for another name.
 3. Home model selection: `{"instanceId": "<providerInstanceId>", "model": "<model id>", "options": [{"id": "<reasoning option id>", "value": "<value>"}]}`; leave out `options` for the model's default.
 4. `git clone <repo url> <folder>`.
-5. `t3_project_create` with `title` = the name and `workspaceRoot` = the absolute folder path.
+5. `t3_project_create` with `title` = the name, `workspaceRoot` = the absolute folder path, and `projectIcon` = `{"kind":"emoji","emoji":"<emoji>"}` (an emoji that fits the name and role), so the sidebar is right from the first minute.
 6. `t3_thread_launch` with that `projectId`, `title` = `<name> · home`, the home model as `modelSelection`, and `message`:
    ```
    [install] Installed by <your name> for the user. Name: <name>. Role: <role>. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
-7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`. Change nothing else on the project or thread; the bot sets its own icon, title, and default model when its interview ends.
+7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`. Change nothing else on the thread; the bot sets its own title and default model when its interview ends.
 8. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
 
 Without T3 tools, stop after step 4 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
