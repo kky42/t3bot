@@ -1,0 +1,11 @@
+#!/bin/sh
+# Fast-forward this bot to its upstream. One status line; never merges or touches local changes.
+cd "$(dirname "$0")/.." || exit 1
+git rev-parse '@{u}' >/dev/null 2>&1 || { echo "UPDATE: skipped - no upstream branch"; exit 0; }
+git fetch -q || { echo "UPDATE: failed - git fetch"; exit 1; }
+n=$(git rev-list --count 'HEAD..@{u}')
+[ "$n" -gt 0 ] || { echo "UPDATE: none"; exit 0; }
+[ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "UPDATE: skipped - local edits to tracked files, $n commits waiting"; exit 0; }
+old=$(git rev-parse --short HEAD)
+git merge -q --ff-only '@{u}' 2>/dev/null || { echo "UPDATE: failed - not a fast-forward, $n commits waiting"; exit 1; }
+echo "UPDATE: $old -> $(git rev-parse --short HEAD) ($n commits) - run bin/wake"

@@ -22,7 +22,6 @@ Test for long-term: would you act differently next week because of it? Then it g
 ## How to write
 
 - The profile is shared: a correction you write there reaches every bot, so write only what is true of the user everywhere. A preference only for you ("you can ping me at night about deploys") goes in your Role notes.
-
 - Write immediately, in the same turn you learn it. Do not batch to the end of a session.
 - One fact per line, short, dated when it can go stale: `- Prefers pi/GLM for routine work (2026-10-15)`.
 - Correct by replacing the wrong line, never by appending a contradiction. If you are unsure which is current, ask.

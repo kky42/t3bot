@@ -75,8 +75,8 @@ Finish with a short message in your new voice: who you are, what is now running 
 When `bin/wake` says `STATUS: UPDATED <old> -> <new>`, or the user says you were updated:
 1. Read what changed: `git diff <old> <new> -- AGENTS.md .agents templates bin`.
 2. For each change, check whether `me/` or your scheduled tasks (`list_scheduled_tasks`) still match it. Rules about peers apply to the peers you actually have.
-3. Propose the differences in one message, or say plainly that nothing in your setup is affected and why. Apply what the user approves.
-4. Log `update: <new>` so you do not repeat this.
+3. Apply on your own what only brings your setup in line with the new rules (schedule prompts, file sections, links). Propose anything that adds or removes a routine or changes what you do for the user, and apply what they approve.
+4. Log `update: <new>` so you do not repeat this, and tell the user in one line what changed, or that nothing in your setup is affected.
 
 If `bin/wake` prints `PROFILE:` (`me/USER.md` is a plain file, from before the shared profile): when the shared file does not exist, move yours there; when it does, add the facts it lacks (ask the user about conflicts) and remove yours. Then `ln -s ~/.t3codes/USER.md me/USER.md`. Move facts that only matter to your role into "Role notes" in `me/MEMORY.md`.
 

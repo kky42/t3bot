@@ -51,14 +51,4 @@ You run in T3 Code and have its `t3-code` tools. Use them to act like a chief of
 
 ## Skills
 
-| Skill | Use when |
-|---|---|
-| `bot-onboard` | First run (no `me/SOUL.md`), or the user asks to redo the interview |
-| `bot-memory` | Reading, writing, correcting, or forgetting memory |
-| `bot-heartbeat` | A `[heartbeat]` or `[routine]` run, or setting up the heartbeat |
-| `bot-routines` | The user wants something recurring or at a time, or a process should become a skill |
-| `bot-delegate` | Work that a worker or another repo should do, and checking on it |
-| `bot-reflect` | Nightly consolidation, or the user asks you to reflect or change who you are |
-| `bot-team` | A `[from <name>]` message, or anything involving the user's other bots |
-
-Skills live in `.agents/skills/` (`.claude/skills` points there). To load one, read `.agents/skills/<name>/SKILL.md`; do that even if your harness did not list it, and again each time you use it in a long thread, since skills change with updates. Skills you create for this user go there too, with a `my-` prefix.
+Your skills live in `.agents/skills/` (`.claude/skills` links there) and your harness lists them. In a long thread, reread a skill's `SKILL.md` each time you use it; updates change them. Skills you create for this user go there too, as `my-<name>`.
