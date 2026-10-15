@@ -20,15 +20,18 @@ git clone https://github.com/kky42/t3bot ~/t3bots/alice
 
 ### Through any agent
 
-Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It asks you for the bot's name, offering a few suggestions, then installs it in `~/t3bots/<name>`; a pinned home thread appears in the sidebar with the interview already started. The bot then sets its emoji icon and updates its thread title and project.
+Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It asks you for the bot's name and which provider, model, and reasoning effort it runs on, offering suggestions, then installs it in `~/t3bots/<name>`; a pinned home thread appears in the sidebar with the interview already started. The bot then sets its emoji icon and updates its thread title and project.
 
 ## Agent install
 
-For an agent installing a bot for its user. Ask only for the name; the bot asks everything else in its own interview.
+For an agent installing a bot for its user. Ask only for the name and the home model; the bot asks everything else in its own interview.
 
-1. Name: if the user has not named the bot, ask them. Offer three or four short, fun, distinct names that fit what you know of them as choices, say any other name works too, and wait for the reply.
+1. Ask the user, in one message, the three questions below as multiple choice: numbered questions, lettered options, your recommendation first, so they can reply `1b 2a 3a` or in their own words. Skip any they already answered. Wait for the reply.
+   1. Name: three or four short, fun, distinct names that fit what you know of them; any other name works too.
+   2. Home model: the bot's home thread runs on it, and so does every heartbeat and routine, so it sets what the bot costs. Offer up to four models from `orchestrator_capabilities` that can run child tasks, written as `<provider displayName> / <model label>`, the cheapest first as the recommendation (a local one if listed).
+   3. Reasoning effort: a) the model's default (recommended) b) low c) high. Map the answer to the chosen model's reasoning option in `orchestrator_capabilities` (its `id` is e.g. `effort`, `reasoningEffort`, or `thinking`), to the closest value it offers.
 2. Folder: `~/t3bots/<slug>`, where `<slug>` is the name in lowercase with spaces as hyphens and only `a-z`, `0-9`, `-` kept. If that folder exists, ask for another name.
-3. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
+3. Home model selection: `{"instanceId": "<providerInstanceId>", "model": "<model id>", "options": [{"id": "<reasoning option id>", "value": "<value>"}]}`; leave out `options` for the model's default.
 4. `git clone <repo url> <folder>`.
 5. `t3_project_create` with `title` = the name and `workspaceRoot` = the absolute folder path.
 6. `t3_thread_launch` with that `projectId`, `title` = `<name> · home`, the home model as `modelSelection`, and `message`:
