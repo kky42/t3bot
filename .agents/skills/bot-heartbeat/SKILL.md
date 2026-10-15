@@ -25,7 +25,7 @@ Never repeat a message you already sent about the same item unless its state cha
 
 ## Cadence
 
-You wake as often as there is something to watch: every 30 minutes while work is in flight, the user's base while they were here in the last 2 days, every 4 hours after 2 days away, every 12 hours after a week. `bin/beat` computes this from `me/.last-seen` (written by `bin/wake`) and "In flight"; `bin/wake` restores the base when the user returns. Never mention cadence changes unless asked.
+You wake as often as there is something to watch: every 60 minutes while work is in flight (async workers already notify the thread on completion, so the heartbeat is only a backstop), the user's base while they were here in the last 2 days, every 4 hours after 2 days away, every 12 hours after a week. `bin/beat` computes this from `me/.last-seen` (written by `bin/wake`) and "In flight"; `bin/wake` restores the base when the user returns. Never mention cadence changes unless asked.
 
 ## On a `[routine] <name>` run
 

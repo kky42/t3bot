@@ -17,7 +17,7 @@ flight=$(awk '/^## /{f=($0=="## In flight")} f&&/^- /' me/NOW.md | wc -l | tr -d
 [ "$1" = --cadence ] || echo "USER LAST SEEN: ${seen:-never} ($days days ago); IN FLIGHT: $flight"
 base=$(sed -n 's/^- Base: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); base=${base:-60}
 cur=$(sed -n 's/^- Current: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); cur=${cur:-$base}
-if [ "$flight" -gt 0 ]; then want=$(( base < 30 ? base : 30 ))
+if [ "$flight" -gt 0 ]; then want=$(( base < 60 ? base : 60 ))
 elif [ "$days" -lt 2 ]; then want=$base
 elif [ "$days" -lt 7 ]; then want=$(( base > 240 ? base : 240 ))
 else want=$(( base > 720 ? base : 720 )); fi
