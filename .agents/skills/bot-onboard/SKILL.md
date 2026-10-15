@@ -66,13 +66,14 @@ Propose your setup in one message, built from `me/ONBOARDING.md` (reread it; use
 - Heartbeat: an interval and what you check (see `bot-heartbeat`). The interval is the base the adaptive cadence works from: hourly on a local model (free), every 3 hours on a cloud model billed per use; ask if you cannot tell (quiet hours mute messages, not runs).
 - Routines: morning brief (time), nightly reflect (time), plus at most three specific to them (a repo watcher, a weekly review, a deadline countdown). If a peer is the user's chief of staff, drop your morning brief: you report to the chief instead (`bot-team`).
 - Workers: which provider/model for which kind of job.
+- Goals: 1-3 long-term goals for this bot, derived from its role and the user's goals; the heartbeat works toward them.
 - First three things you will do right after setup.
 
 Ask for approval. Adjust and re-propose only what they change.
 
 ### 6. Build
 Only after approval:
-1. Copy `templates/*.md` except `USER.md` to `me/` and fill `SOUL.md`, `MEMORY.md`, `NOW.md` from the interview. The profile: if `~/.t3codes/USER.md` does not exist, write it from `templates/USER.md`; add what you learned to it either way; then `ln -s ~/.t3codes/USER.md me/USER.md`. Fill the Workers table's "Bot home" row from this thread's `t3_thread_configuration` if it is empty. Facts only this bot's job needs go under "Role notes" in `me/MEMORY.md`, not the shared profile. Every fact comes from the user or something you verified; leave unknowns as open questions in the profile.
+1. Copy `templates/*.md` except `USER.md` to `me/` and fill `SOUL.md`, `MEMORY.md`, `NOW.md` from the interview, and `## Goals` in `HEARTBEAT.md` with the approved goals. The profile: if `~/.t3codes/USER.md` does not exist, write it from `templates/USER.md`; add what you learned to it either way; then `ln -s ~/.t3codes/USER.md me/USER.md`. Fill the Workers table's "Bot home" row from this thread's `t3_thread_configuration` if it is empty. Facts only this bot's job needs go under "Role notes" in `me/MEMORY.md`, not the shared profile. Every fact comes from the user or something you verified; leave unknowns as open questions in the profile.
 2. Call `orchestrator_capabilities` and record this thread's `parentThreadId` as the home thread in `me/HEARTBEAT.md` (with the projectId from `t3_project_list` whose root is this folder).
 3. Create the heartbeat and nightly reflect (the proposal always includes them; skip one only if the user declined it: they are what make you a bot) and the other routines as agreed, following `bot-heartbeat` and `bot-routines`. Record every `scheduledTaskId` in `me/HEARTBEAT.md`.
 4. Write the first entry in `me/log/<today>.md`: met the user, what was set up, and `update: <git log -1 --format=%h>`.
@@ -88,7 +89,8 @@ When `bin/wake` says `STATUS: UPDATED <old> -> <new>`, or the user says you were
 1. Read what changed: `git diff <old> <new> -- AGENTS.md .agents templates bin`.
 2. For each change, check whether `me/` or your scheduled tasks (`list_scheduled_tasks`) still match it. Rules about peers apply to the peers you actually have.
 3. Apply on your own what only brings your setup in line with the new rules (schedule prompts, file sections, links). Propose anything that adds or removes a routine or changes what you do for the user, and apply what they approve.
-4. Log `update: <new>` so you do not repeat this, and tell the user in one line what changed, or that nothing in your setup is affected.
+4. If `## Goals` in `me/HEARTBEAT.md` has no lines and `NOW.md` has no `goals asked`, propose 1-3 goals to the user now, as in `bot-heartbeat` step 6, and add `- goals asked <date>` to "Waiting on the user" so the heartbeat does not ask again.
+5. Log `update: <new>` so you do not repeat this, and tell the user in one line what changed, or that nothing in your setup is affected.
 
 If `bin/wake` prints `PROFILE:` (`me/USER.md` is a plain file, from before the shared profile): when the shared file does not exist, move yours there; when it does, add the facts it lacks (ask the user about conflicts) and remove yours. Then `ln -s ~/.t3codes/USER.md me/USER.md`. Move facts that only matter to your role into "Role notes" in `me/MEMORY.md`.
 

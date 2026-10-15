@@ -54,7 +54,7 @@ Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, me
 | A Bot with a name, avatar, description | `me/SOUL.md`, written with you during onboarding |
 | Brain dump, grill-me, reverse-prompted setup | `bot-onboard` skill, first run |
 | Memory you can read and edit | `~/.t3codes/USER.md` (your profile, shared by all your bots), `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
-| Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`) |
+| Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`); goal-driven: each run works toward the bot's goals and sets its own next wake, with a fixed backstop |
 | Routines and saved skills | T3 scheduled tasks (`bot-routines`); learned skills in `.agents/skills/my-*` |
 | Chief of staff with specialist bots | Workers on any provider and repo (`bot-orchestrate`); other bots in their own folders (`bot-team`) |
 | Gets better over time | Nightly `bot-reflect`: consolidate memory, prune, evolve personality from feedback |
@@ -67,7 +67,7 @@ AGENTS.md               the bot's kernel: identity, wake-up, rules (CLAUDE.md im
 .agents/skills/bot-*    onboarding, memory, heartbeat, routines, delegation, reflection, team
 .claude/skills          symlink to .agents/skills
 bin/wake                wake-up status and memory dump
-bin/beat                heartbeat facts: time, user activity, work in flight, cadence
+bin/beat                heartbeat facts: time, user activity, work in flight, goals, cadence
 bin/update              reset to upstream, keeping me/ and my-* skills (run nightly by reflect)
 templates/              seeds for me/
 me/                     your bot's mind; private and gitignored
