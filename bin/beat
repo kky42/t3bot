@@ -1,10 +1,12 @@
 #!/bin/sh
 # Facts for a heartbeat run, computed fresh: time, user activity, work in flight, the cadence to use.
 cd "$(dirname "$0")/.." || exit 1
-# bin/wake runs it with --cadence for the cadence line only.
-if [ "$1" != --cadence ]; then
+# The heartbeat runs it with --heartbeat (only that run marks the skill as read); bin/wake with --cadence.
+if [ "$1" = --heartbeat ]; then
   h=$(cksum < .agents/skills/bot-heartbeat/SKILL.md | cut -d' ' -f1)
   [ "$(cat me/.beat-skill 2>/dev/null)" = "$h" ] || { echo "SKILL CHANGED: reread .agents/skills/bot-heartbeat/SKILL.md before anything else"; echo "$h" > me/.beat-skill; }
+fi
+if [ "$1" != --cadence ]; then
   echo "NOW: $(date '+%F %H:%M %Z')"
   grep -i -m1 "quiet hours" me/USER.md
 fi
