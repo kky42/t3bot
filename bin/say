@@ -1,0 +1,13 @@
+#!/bin/sh
+# Build a peer message for t3_thread_send: prints "[from <Name>] <text>" and sends nothing
+# (sending is t3_thread_send, an MCP tool the bot calls with this output).
+cd "$(dirname "$0")/.." || exit 1
+if [ "$#" -lt 2 ] || [ -z "$1" ] || [ -z "$2" ]; then
+  echo "DOCTOR: FAIL say - usage: bin/say <threadId> <message>" >&2
+  exit 1
+fi
+name=$(grep -m1 '^- Name:' me/SOUL.md 2>/dev/null | sed 's/^- Name: *//')
+name=${name:-$(basename "$(pwd)")}
+thread=$1
+shift
+printf '[from %s] %s\n' "$name" "$*"

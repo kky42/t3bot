@@ -25,7 +25,7 @@ When a job is clearly in another bot's role, or the user asks you to involve one
 [from <your name> | reply to <your current threadId>] <what you need, why, by when, what to send back>
 ```
 
-Your current threadId is `parentThreadId` from `orchestrator_capabilities`. Add a line under "In flight" in `me/NOW.md` (`peer: <Name> | thread: <their home threadId>`), tell the user in one line, and end your turn. The reply arrives in your thread as a new message starting with `[from <Name>`.
+Your current threadId is `parentThreadId` from `orchestrator_capabilities`. Build the message with `bin/say <threadId> <text>` so the `[from <name>]` prefix and its checks are never forgotten, then send its output with `t3_thread_send`. Add a line under "In flight" in `me/NOW.md` (`peer: <Name> | thread: <their home threadId>`), tell the user in one line, and end your turn. The reply arrives in your thread as a new message starting with `[from <Name>]`.
 
 ## Answer a peer (`[from <name> ...]`)
 

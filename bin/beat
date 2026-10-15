@@ -30,6 +30,10 @@ if [ "$mode" = --heartbeat ]; then
     if [ -n "$asked" ]; then echo "GOALS: missing - $asked, waiting on the user; do not ask again"
     else echo "GOALS: missing - outside quiet hours, propose 1-3 goals to the user once (bot-heartbeat step 6)"; fi
   fi
+  # Self-diagnosis is due when it has never run or is more than 24h old (see bin/doctor).
+  if [ ! -f me/.last-doctor ] || [ -n "$(find me/.last-doctor -mtime +0 2>/dev/null)" ]; then
+    echo "DOCTOR: due - run bin/doctor"
+  fi
   exit 0
 fi
 base=$(sed -n 's/^- Base: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); base=${base:-60}

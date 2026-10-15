@@ -1,0 +1,107 @@
+#!/bin/sh
+# Deterministic self-diagnosis over the local bot files. One line per check:
+#   DOCTOR: PASS <name>  |  DOCTOR: FAIL <name> - <exact fix hint>
+# then "DOCTOR: <n> fail". Always exit 0. Every parse failure and fallback is printed, never silent.
+# The two T3-CHECK lines are reminders only: the bot runs them via MCP tools (list_scheduled_tasks), the script cannot.
+cd "$(dirname "$0")/.." || exit 1
+fails=0
+pass() { echo "DOCTOR: PASS $1"; }
+fail() { echo "DOCTOR: FAIL $1 - $2"; fails=$((fails + 1)); }
+section() { awk -v s="## $1" '/^## /{f=($0==s)} f&&/^- /' "$2"; }
+now=$(date +%s)
+
+# HEARTBEAT.md exists; without it nothing else is checkable, so stop after this line.
+if [ ! -f me/HEARTBEAT.md ]; then
+  fail heartbeat-exists "me/HEARTBEAT.md is missing - create it (bot-heartbeat, 'Set up or change the heartbeat')"
+  echo "DOCTOR: $fails fail"
+  exit 0
+fi
+pass heartbeat-exists
+
+# Base and Current: the parser silently falls back to 60m (Base) / Base (Current) on a bad line - warn exact format.
+if [ -z "$(sed -n 's/^- Base: every [0-9][0-9]*m.*/x/p' me/HEARTBEAT.md)" ]; then
+  fail heartbeat-base "no parseable '- Base: every <n>m' line in me/HEARTBEAT.md - write it exactly like that (bin/beat silently falls back to 60m)"
+else
+  pass heartbeat-base
+fi
+cc=$(grep -c '^- Current:' me/HEARTBEAT.md)
+if [ "$cc" -gt 0 ] && [ -z "$(sed -n 's/^- Current: every [0-9][0-9]*m.*/x/p' me/HEARTBEAT.md)" ]; then
+  fail heartbeat-current "a '- Current:' line exists but does not parse - write it exactly '- Current: every <n>m' (bin/beat silently falls back to Base)"
+else
+  pass heartbeat-current
+fi
+
+# Goals: at least one '- ' entry; every not-yet-done goal carries the "— measure:" marker (kky: goals carry a measure).
+goals=$(section Goals me/HEARTBEAT.md)
+if [ -z "$goals" ]; then
+  fail goals-present "'## Goals' in me/HEARTBEAT.md has no '- ' entries - propose 1-3 goals with measures to the user (bot-heartbeat step 6), or record a (done YYYY-MM-DD) one"
+else
+  pass goals-present
+  nom=$(printf '%s\n' "$goals" | awk '/\(done [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)/{next} index($0, "— measure:")==0{c++} END{print c+0}')
+  if [ "$nom" -gt 0 ]; then
+    fail goals-measure "$nom goal line(s) under '## Goals' lack the '— measure:' marker - rewrite each as '- <goal> — measure: <how progress is judged>' (a goal without a measure cannot be optimized)"
+  else
+    pass goals-measure
+  fi
+fi
+
+# Routines: a heartbeat line with scheduled-task:, else bin/beat cannot rewrite the schedule.
+if section Routines me/HEARTBEAT.md | grep -i heartbeat | grep -q 'scheduled-task:'; then
+  pass routines-heartbeat
+else
+  fail routines-heartbeat "no heartbeat line with 'scheduled-task:' under '## Routines' in me/HEARTBEAT.md - record it as '- heartbeat | every <n>m | scheduledTaskId: scheduled-task:<id>' (bin/beat cannot change the schedule without it)"
+fi
+
+# Next: if present, must be '- Next: YYYY-MM-DDTHH:MM' (T or a space before the time); an unreadable one silently drops to the backstop.
+if [ -n "$(grep -m1 '^- Next:' me/HEARTBEAT.md)" ]; then
+  if grep -q -E '^- Next: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][T ][0-9][0-9]:[0-9][0-9]' me/HEARTBEAT.md; then
+    pass next-format
+  else
+    fail next-format "the '- Next:' line in me/HEARTBEAT.md is unreadable - write it exactly '- Next: YYYY-MM-DDTHH:MM <reason>' (bin/beat silently uses the backstop otherwise)"
+  fi
+else
+  pass next-format
+fi
+
+# NOW.md: one '## ' section each; no stale goals ask (older than 7 days while Goals is still empty).
+if [ ! -f me/NOW.md ]; then
+  fail now-exists "me/NOW.md is missing - create it with '## Waiting on the user', '## In flight', '## Follow-ups'"
+else
+  pass now-exists
+  dups=$(grep '^## ' me/NOW.md | sort | uniq -d)
+  if [ -n "$dups" ]; then
+    fail now-duplicate-headers "duplicate '## ' header(s) in me/NOW.md: $(echo "$dups" | tr '\n' ' ')- keep exactly one section each"
+  else
+    pass now-duplicate-headers
+  fi
+  asked=$(grep -i -o -m1 'goals asked [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' me/NOW.md | awk '{print $3}')
+  if [ -n "$asked" ] && [ -z "$goals" ]; then
+    a=$(date -j -f "%Y-%m-%d" "$asked" +%s 2>/dev/null || date -d "$asked" +%s 2>/dev/null)
+    if [ -n "$a" ] && [ $(( (now - a) / 86400 )) -gt 7 ]; then
+      fail now-stale-goals-ask "'- goals asked $asked' in me/NOW.md is older than 7 days with '## Goals' still empty - ask the user once more, or drop the loop"
+    else
+      pass now-stale-goals-ask
+    fi
+  else
+    pass now-stale-goals-ask
+  fi
+fi
+
+# State files.
+if [ ! -f me/.last-seen ]; then
+  fail last-seen "me/.last-seen is missing - bin/beat and bin/wake need it; write the current date 'YYYY-MM-DD HH:MM'"
+elif [ -z "$(sed -n 's/^\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\([ T][0-9][0-9]:[0-9][0-9]\)\{0,1\}\) */\1/p' me/.last-seen)" ]; then
+  fail last-seen "me/.last-seen does not contain a date - write it as 'YYYY-MM-DD HH:MM'"
+else
+  pass last-seen
+fi
+if [ -d me/log ]; then pass log-dir; else fail log-dir "me/log/ directory is missing - create it (daily logs YYYY-MM-DD.md go there)"; fi
+if [ -f .agents/skills/bot-heartbeat/SKILL.md ]; then pass heartbeat-skill; else fail heartbeat-skill ".agents/skills/bot-heartbeat/SKILL.md is missing - the heartbeat cannot run without its skill; reinstall the bot files"; fi
+
+# Not scriptable from shell: the bot does these mechanically, doctor only reminds.
+echo "DOCTOR: T3-CHECK heartbeat-prompt - via list_scheduled_tasks, exact-compare the heartbeat task's prompt against the canonical string in bot-heartbeat SKILL.md step 3"
+echo "DOCTOR: T3-CHECK task-errors - via list_scheduled_tasks and thread history, confirm no task is failing with ThreadNotFoundError or ThreadArchivedError"
+
+touch me/.last-doctor 2>/dev/null
+echo "DOCTOR: $fails fail"
+exit 0
