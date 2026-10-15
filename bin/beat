@@ -1,28 +1,79 @@
 #!/bin/sh
-# Facts for a heartbeat run, computed fresh: time, user activity, work in flight, the cadence to use.
+# Facts for a heartbeat run, computed fresh: time, user activity, work in flight, goals, the cadence to use.
+#   --heartbeat   start of a heartbeat run: facts and goals (only this run marks the skill as read)
+#   --apply-next  end of a heartbeat run, after writing "- Next:": the CADENCE line from Next, in-flight work and the backstop
+#   --cadence     bin/wake: the CADENCE line, never from Next, and only to tighten (the user is back or work is in flight)
 cd "$(dirname "$0")/.." || exit 1
-# The heartbeat runs it with --heartbeat (only that run marks the skill as read); bin/wake with --cadence.
-if [ "$1" = --heartbeat ]; then
+mode=$1
+if [ "$mode" = --heartbeat ]; then
   h=$(cksum < .agents/skills/bot-heartbeat/SKILL.md | cut -d' ' -f1)
   [ "$(cat me/.beat-skill 2>/dev/null)" = "$h" ] || { echo "SKILL CHANGED: reread .agents/skills/bot-heartbeat/SKILL.md before anything else"; echo "$h" > me/.beat-skill; }
 fi
-if [ "$1" != --cadence ]; then
+section() { awk -v s="## $1" '/^## /{f=($0==s)} f&&/^- /' "$2"; }
+if [ "$mode" = --heartbeat ] || [ -z "$mode" ]; then
   echo "NOW: $(date '+%F %H:%M %Z')"
   grep -i -m1 "quiet hours" me/USER.md
 fi
+now=$(date +%s)
 seen=$(cat me/.last-seen 2>/dev/null)
-s=$(date -j -f "%F %H:%M" "$seen" +%s 2>/dev/null || date -d "$seen" +%s 2>/dev/null || date +%s)
-days=$(( ($(date +%s) - s) / 86400 ))
-flight=$(awk '/^## /{f=($0=="## In flight")} f&&/^- /' me/NOW.md | wc -l | tr -d ' ')
-[ "$1" = --cadence ] || echo "USER LAST SEEN: ${seen:-never} ($days days ago); IN FLIGHT: $flight"
+s=$(date -j -f "%F %H:%M" "$seen" +%s 2>/dev/null || date -d "$seen" +%s 2>/dev/null || echo "$now")
+days=$(( (now - s) / 86400 ))
+# Only real work counts as in flight: lines naming a worker, task, peer, thread or peer request; blocked items and notes do not.
+flight=$(section "In flight" me/NOW.md | grep -c -E '(^|[ |(])(worker|task|peer|thread|for):')
+if [ "$mode" = --heartbeat ] || [ -z "$mode" ]; then
+  echo "USER LAST SEEN: ${seen:-never} ($days days ago); IN FLIGHT: $flight"
+fi
+if [ "$mode" = --heartbeat ]; then
+  # Done goals still count: reflect replaces them, the interview is only for a bot that never had any.
+  if [ -z "$(section Goals me/HEARTBEAT.md)" ]; then
+    asked=$(grep -i -o -m1 'goals asked [0-9-]*' me/NOW.md)
+    if [ -n "$asked" ]; then echo "GOALS: missing - $asked, waiting on the user; do not ask again"
+    else echo "GOALS: missing - outside quiet hours, propose 1-3 goals to the user once (bot-heartbeat step 6)"; fi
+  fi
+  exit 0
+fi
 base=$(sed -n 's/^- Base: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); base=${base:-60}
 cur=$(sed -n 's/^- Current: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); cur=${cur:-$base}
-if [ "$flight" -gt 0 ]; then want=$(( base < 60 ? base : 60 ))
-elif [ "$days" -lt 2 ]; then want=$base
-elif [ "$days" -lt 7 ]; then want=$(( base > 240 ? base : 240 ))
-else want=$(( base > 720 ? base : 720 )); fi
-if [ "$want" = "$cur" ]; then [ "$1" = --cadence ] || echo "CADENCE: every ${cur}m, keep"
+checks=$(section Checklist me/HEARTBEAT.md | wc -l | tr -d ' ')
+# Next: the bot's own estimate of its next reason to act. "- Next: YYYY-MM-DDTHH:MM reason" (or a space for T; seconds and a
+# trailing zone are ignored). A past one falls back to the backstop silently; never read by bin/wake.
+nextmin=""
+if [ "$mode" != --cadence ]; then
+  nl=$(grep -m1 '^- Next:' me/HEARTBEAT.md)
+  if [ -n "$nl" ]; then
+    nt=$(printf '%s\n' "$nl" | sed -n 's/^- Next: *\([0-9]\{4\}-[0-9][0-9]-[0-9][0-9]\)[T ]\([0-9][0-9]:[0-9][0-9]\).*/\1 \2/p')
+    n=$(date -j -f "%Y-%m-%d %H:%M:%S" "$nt:00" +%s 2>/dev/null || date -d "$nt" +%s 2>/dev/null)
+    if [ -z "$nt" ] || [ -z "$n" ]; then echo "NEXT: unreadable, using the backstop - write \"- Next: YYYY-MM-DDTHH:MM <reason>\""
+    elif section Routines me/HEARTBEAT.md | grep -q "${nt#* }"; then echo "NEXT: ${nt#* } is a routine's run time, using the backstop - the routine wakes you itself; pick your own next reason to act"
+    elif [ "$n" -gt "$now" ]; then nextmin=$(( (n - now + 59) / 60 )); fi
+  fi
+fi
+hard=""
+if [ -n "$nextmin" ]; then
+  why="next wake"; want=$(( nextmin < 15 ? 15 : nextmin )); want=$(( want > 720 ? 720 : want ))
+  # Health checks never go dark: with a checklist, sleep at most Base.
+  if [ "$checks" -gt 0 ]; then hard=$base; want=$(( want < base ? want : base )); fi
 else
-  id=$(grep -i -m1 '^- .*heartbeat.*scheduledTaskId' me/HEARTBEAT.md | sed 's/.*scheduledTaskId: *\([^ |]*\).*/\1/')
-  echo "CADENCE: set every ${want}m: update_scheduled_task $id with schedule {\"type\":\"interval\",\"everyMs\":$((want * 60000))}, then write \"- Current: every ${want}m\" in me/HEARTBEAT.md. Do not mention it."
+  why="backstop"
+  if [ "$days" -lt 2 ]; then want=$base
+  elif [ "$days" -lt 7 ]; then want=$(( base > 240 ? base : 240 ))
+  else want=$(( base > 720 ? base : 720 )); fi
+fi
+# Work in flight: wake no later than 60m (workers notify the thread on completion; this is the backstop).
+if [ "$flight" -gt 0 ] && [ "$want" -gt 60 ]; then want=60; why="work in flight"; fi
+[ "$flight" -gt 0 ] && hard=$(( ${hard:-60} < 60 ? ${hard:-60} : 60 ))
+# Tolerance band: a change within max(15m, 20% of Current) is not worth a schedule rewrite, unless Current breaks a ceiling.
+d=$(( want - cur )); d=${d#-}; band=$(( cur / 5 > 15 ? cur / 5 : 15 ))
+change=""
+if [ -n "$hard" ] && [ "$cur" -gt "$hard" ]; then change=1
+elif [ "$d" -gt "$band" ]; then change=1; fi
+# bin/wake only tightens, so a session never undoes the heartbeat's own estimate.
+[ "$mode" = --cadence ] && [ "$want" -ge "$cur" ] && change=""
+if [ -z "$change" ]; then [ "$mode" = --cadence ] || echo "CADENCE: every ${cur}m, keep"
+else
+  hl=$(section Routines me/HEARTBEAT.md | grep -i -m1 heartbeat)
+  id=$(printf '%s\n' "$hl" | grep -o -m1 'scheduled-task:[^ |]*')
+  [ -n "$id" ] || id=$(printf '%s\n' "$hl" | sed -n 's/.*scheduledTaskId: *\([^ |]*\).*/\1/p')
+  [ -n "$id" ] || id="<the heartbeat's id from list_scheduled_tasks; record it under Routines as scheduledTaskId: <id>>"
+  echo "CADENCE: set every ${want}m ($why): update_scheduled_task $id with schedule {\"type\":\"interval\",\"everyMs\":$((want * 60000))}, then write \"- Current: every ${want}m\" in me/HEARTBEAT.md. Do not mention it."
 fi
