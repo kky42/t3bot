@@ -15,9 +15,19 @@ s=$(date -j -f "%F %H:%M" "$seen" +%s 2>/dev/null || date -d "$seen" +%s 2>/dev/
 days=$(( ($(date +%s) - s) / 86400 ))
 flight=$(awk '/^## /{f=($0=="## In flight")} f&&/^- /' me/NOW.md | wc -l | tr -d ' ')
 [ "$1" = --cadence ] || echo "USER LAST SEEN: ${seen:-never} ($days days ago); IN FLIGHT: $flight"
+goals=$(awk '/^## /{f=($0=="## Goals")} f&&/^- /' me/HEARTBEAT.md | wc -l | tr -d ' ')
+[ "$1" = --cadence ] || { [ "$goals" -gt 0 ] || echo "GOALS: missing - interview the user about this bot's long-term goals (see bot-heartbeat SKILL.md) and write them under ## Goals in me/HEARTBEAT.md"; }
 base=$(sed -n 's/^- Base: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); base=${base:-60}
 cur=$(sed -n 's/^- Current: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); cur=${cur:-$base}
-if [ "$flight" -gt 0 ]; then want=$(( base < 60 ? base : 60 ))
+# Next wake: the bot's own estimate of when a reason to act exists next (format: - Next: YYYY-MM-DDTHH:MM reason ...). Falls back to the fixed ladder when missing, stale, or unparseable - the fixed base is the backstop, never the rhythm.
+nextmin=""
+next=$(sed -n 's/^- Next: \([0-9T:-]\{16\}\).*/\1/p' me/HEARTBEAT.md | head -1)
+if [ -n "$next" ]; then
+  n=$(date -j -f "%Y-%m-%dT%H:%M" "$next" +%s 2>/dev/null || date -d "$next" +%s 2>/dev/null)
+  [ -n "$n" ] && nextmin=$(( (n - $(date +%s)) / 60 ))
+fi
+if [ "$flight" -gt 0 ]; then want=$(( base < 15 ? base : 15 ))
+elif [ -n "$nextmin" ] && [ "$nextmin" -gt 0 ]; then want=$(( nextmin < 720 ? nextmin : 720 )); want=$(( want < 15 ? 15 : want ))
 elif [ "$days" -lt 2 ]; then want=$base
 elif [ "$days" -lt 7 ]; then want=$(( base > 240 ? base : 240 ))
 else want=$(( base > 720 ? base : 720 )); fi

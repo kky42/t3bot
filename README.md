@@ -54,7 +54,7 @@ Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, me
 | A Bot with a name, avatar, description | `me/SOUL.md`, written with you during onboarding |
 | Brain dump, grill-me, reverse-prompted setup | `bot-onboard` skill, first run |
 | Memory you can read and edit | `~/.t3codes/USER.md` (your profile, shared by all your bots), `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
-| Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`) |
+| Always on, heartbeat | Goal-driven: T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`); the bot sets its own next wake from its goals, with a fixed backstop |
 | Routines and saved skills | T3 scheduled tasks (`bot-routines`); learned skills in `.agents/skills/my-*` |
 | Chief of staff with specialist bots | Workers on any provider and repo (`bot-orchestrate`); other bots in their own folders (`bot-team`) |
 | Gets better over time | Nightly `bot-reflect`: consolidate memory, prune, evolve personality from feedback |

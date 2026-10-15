@@ -9,13 +9,13 @@ The heartbeat is what makes you a bot instead of a chat: a T3 scheduled task tha
 
 ## On a `[heartbeat]` run
 
-1. Run `bin/beat --heartbeat` and do what its `SKILL CHANGED` and `CADENCE` lines say, silently. It prints the time, quiet hours, when the user was last here, and work in flight; never guess those. Read `me/HEARTBEAT.md` and `me/NOW.md`; nothing else unless a step needs it.
+1. Run `bin/beat --heartbeat` and do what its `SKILL CHANGED`, `GOALS`, and `CADENCE` lines say, silently. It prints the time, quiet hours, when the user was last here, and work in flight; never guess those. Read `me/HEARTBEAT.md` and `me/NOW.md`; nothing else unless a step needs it.
 2. Quiet hours: if now is inside them, still do steps 3 and 4 (checks never pause), skip 6, and stay silent unless something is urgent by the user's own definition.
 3. In flight: for each item, check its worker thread with `t3_thread_read` (small `limit`); for a peer job, read the peer's home thread too, in case it answered there instead of sending. Items marked `for: <peer>` that are done but unsent: send the result now (`bot-team`). Finished: verify the result against its "check" before believing it, then move it to "Waiting on the user" with a one-line summary and evidence. Stuck, failed, or waiting on a pending request: say so precisely.
 4. Follow-ups: do the ones that are due, or say why not.
 5. Run the checklist in `me/HEARTBEAT.md`.
-6. Initiative, at most one new job per day and only outside quiet hours: if an open loop, or an idea the user has already seen in a brief, can be advanced without the user (research, a draft, a check), hand it to a worker (`bot-orchestrate`) and record it under "In flight". Never start anything external or irreversible.
-7. Update `NOW.md`. Append one line to today's log only if something happened.
+6. Goals and initiative, at most one new job per day and only outside quiet hours: if the script printed `GOALS: missing`, interview the user about this bot's long-term goals - propose 1-3 derived from its role and the user's goals in `me/USER.md`, get their confirmation or edits, and write them under `## Goals` in `me/HEARTBEAT.md`. Otherwise, if a goal can be advanced by a small job a worker could do (research, a draft, a check), hand it to a worker (`bot-orchestrate`) and record it under "In flight". Never start anything external or irreversible.
+7. Update `NOW.md`, write the `- Next:` line in `me/HEARTBEAT.md` (see Cadence), and append one line to today's log only if something happened.
 
 Reply:
 - Nothing needs the user: `HEARTBEAT_OK` and nothing else, or `HEARTBEAT_OK - started <thing>` if you started something. No status recap; the user reads these at a glance.
@@ -25,7 +25,11 @@ Never repeat a message you already sent about the same item unless its state cha
 
 ## Cadence
 
-You wake as often as there is something to watch: every 60 minutes while work is in flight (async workers already notify the thread on completion, so the heartbeat is only a backstop), the user's base while they were here in the last 2 days, every 4 hours after 2 days away, every 12 hours after a week. `bin/beat` computes this from `me/.last-seen` (written by `bin/wake`) and "In flight"; `bin/wake` restores the base when the user returns. Never mention cadence changes unless asked.
+The heartbeat is the bot's outer loop: each run reconciles state (in flight, follow-ups, checklist, goal progress), acts on at most one thing, then sets its own next wake. Three mechanisms:
+
+- **Goals** (`## Goals` in `me/HEARTBEAT.md`, 1-3 lines): the long-term directions that make proactivity purposeful. Every run considers whether one small, non-blocking job can advance one (the initiative rules above apply). No goals means no direction; the script flags a bot that has none.
+- **Next wake** (`- Next: YYYY-MM-DDTHH:MM reason ...` in `me/HEARTBEAT.md`): at the end of every run, estimate when the next reason to act exists - a follow-up coming due, in-flight work likely finished, a goal step worth attempting, a watch likely to change - and write that line. `bin/beat` sleeps until then (clamped 15m-720m); rewrite it whenever the estimate changes materially. Dynamic factors (kky, 2026-10-15): how far along the goal is, how much effort the next step needs, whether the bot is waiting on user feedback (slow down, batch), and how urgently the user wants the goal pursued (speed up). Waiting on the user is the most common reason to sleep long.
+- **Backstop** (the Base line): when Next is missing, stale, or unparseable, `bin/beat` falls back to the fixed ladder - base while the user was active in the last 2 days, 4h floors after 2 days away, 12h after a week. The fixed interval is a safety net, not the rhythm; never under 15 minutes.
 
 ## On a `[routine] <name>` run
 
