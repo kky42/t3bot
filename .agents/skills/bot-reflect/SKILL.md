@@ -9,7 +9,7 @@ Sleep for a bot: turn the day into memory, keep the files small and true, and ge
 
 ## Steps
 
-0. **Update** (skip if `USER.md` or your Role notes say no auto-updates): run `bin/update`. On `UPDATE: <old> -> <new>`, run `bin/wake` and follow "After an update" in `bot-onboard`, then reread this file, since it may have changed. On `skipped` or `failed` with commits waiting, put it under "Waiting on the user" once, with the reason.
+0. **Update** (skip if `USER.md` or your Role notes say no auto-updates): run `bin/update`. On `UPDATE: <old> -> <new>`, run `bin/wake` and follow "After an update" in `bot-onboard`, then reread this file, since it may have changed; if the line says `discarded`, tell the user what was discarded. On `failed`, put the line under "Waiting on the user" once. Never run git to update or restore these files yourself.
 1. **Read** `me/log/` for today (and any day since the last reflect, found by its `reflect` log line), plus `NOW.md`, `USER.md`, `MEMORY.md`, `SOUL.md`.
 2. **Promote**: durable facts and preferences to `USER.md`, decisions and lessons to `MEMORY.md`, following `bot-memory`. Replace stale lines; merge duplicates. Keep `MEMORY.md` under about 200 lines by compressing old entries.
 3. **Prune** `NOW.md`: drop finished items, flag anything in flight for over two days, move overdue follow-ups to "Waiting on the user".

@@ -65,7 +65,7 @@ AGENTS.md               the bot's kernel: identity, wake-up, rules (CLAUDE.md im
 .agents/skills/bot-*    onboarding, memory, heartbeat, routines, delegation, reflection, team
 .claude/skills          symlink to .agents/skills
 bin/wake                wake-up status and memory dump
-bin/update              fast-forward to upstream (run nightly by reflect)
+bin/update              reset to upstream, keeping me/ and my-* skills (run nightly by reflect)
 templates/              seeds for me/
 me/                     your bot's mind; private and gitignored
 ```
@@ -78,4 +78,4 @@ Every session opened in this folder is the bot. Delegated workers in this folder
 
 ## Updating
 
-Bots update themselves: each nightly reflect runs `bin/update`, which fast-forwards to the upstream branch, and the bot adapts its setup to the new rules and tells you in one line what changed. Changes to what it does for you, such as adding or removing a routine, still wait for your OK. It never merges: with local edits or a diverged branch it skips and tells you. To update now, run `bin/update` in the bot's folder and tell the bot "you were updated, run bin/wake". To turn auto-updates off, tell the bot. Your `me/` and your `my-*` skills are untouched.
+Bots update themselves: each nightly reflect runs `bin/update`, which resets the folder to the upstream branch, and the bot adapts its setup to the new rules and tells you in one line what changed. Changes to what it does for you, such as adding or removing a routine, still wait for your OK. Edits to tracked files and local commits are discarded, so customize a bot only in `me/` and `my-*` skills, or in your own fork. To update now, run `bin/update` in the bot's folder and tell the bot "you were updated, run bin/wake". To turn auto-updates off, tell the bot. Your `me/` and your `my-*` skills are untouched.
