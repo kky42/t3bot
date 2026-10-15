@@ -6,6 +6,10 @@
 - threadId:
 - projectId:
 
+## Cadence
+- Base: every 60m (the user's choice)
+- Current: every 60m
+
 ## Checklist
 <!-- User-specific checks only; the skill already checks In flight and Follow-ups. -->
 

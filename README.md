@@ -20,23 +20,23 @@ git clone https://github.com/kky42/t3bot ~/t3bots/alice
 
 ### Through any agent
 
-Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It asks you for the bot's name and which provider, model, and reasoning effort it runs on, offering suggestions, then installs it in `~/t3bots/<name>`; a pinned home thread appears in the sidebar with the interview already started. The bot then sets its emoji icon and updates its thread title and project.
+Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It asks what the bot is for, its name, and which model it runs on, offering suggestions (and skipping what your other bots already know), then installs it in `~/t3bots/<name>`; a pinned home thread appears in the sidebar with the interview already started. The bot then sets its emoji icon and updates its thread title and project.
 
 ## Agent install
 
-For an agent installing a bot for its user. Ask only for the name and the home model; the bot asks everything else in its own interview.
+For an agent installing a bot for its user. Ask only for the role, the name, and the home model; the bot asks everything else in its own interview. If `~/.t3codes/USER.md` exists, the user already has bots: read it and the `me/SOUL.md` of each bot folder in `~/t3bots/`, and use them below.
 
 1. Ask the user, in one message, the three questions below as multiple choice: numbered questions, lettered options, your recommendation first, so they can reply `1b 2a 3a` or in their own words. Skip any they already answered. Wait for the reply.
-   1. Name: three or four short, fun, distinct names that fit what you know of them; any other name works too.
-   2. Home model: the bot's home thread runs on it, and so does every heartbeat and routine, so it sets what the bot costs. Offer up to four models from `orchestrator_capabilities` that can run child tasks, written as `<provider displayName> / <model label>`, the cheapest first as the recommendation (a local one if listed).
-   3. Reasoning effort: a) the model's default (recommended) b) low c) high. Map the answer to the chosen model's reasoning option in `orchestrator_capabilities` (its `id` is e.g. `effort`, `reasoningEffort`, or `thinking`), to the closest value it offers.
+   1. Role: three or four jobs that fit what you know of them (chief of staff, development, social media, research, ...), none an existing bot already has.
+   2. Name: three or four short, fun, distinct names; any other name works too.
+   3. Home model: the bot's home thread runs on it, and so does every heartbeat and routine, so it sets what the bot costs. Offer up to four models from `orchestrator_capabilities` that can run child tasks, written as `<provider displayName> / <model label>`; recommend the profile's "Bot home" row if there is one, else the cheapest (a local one if listed). Reasoning effort is the model's default; say they can add "low" or "high". Map that to the model's reasoning option in `orchestrator_capabilities` (its `id` is e.g. `effort`, `reasoningEffort`, or `thinking`), to the closest value it offers.
 2. Folder: `~/t3bots/<slug>`, where `<slug>` is the name in lowercase with spaces as hyphens and only `a-z`, `0-9`, `-` kept. If that folder exists, ask for another name.
 3. Home model selection: `{"instanceId": "<providerInstanceId>", "model": "<model id>", "options": [{"id": "<reasoning option id>", "value": "<value>"}]}`; leave out `options` for the model's default.
 4. `git clone <repo url> <folder>`.
 5. `t3_project_create` with `title` = the name and `workspaceRoot` = the absolute folder path.
 6. `t3_thread_launch` with that `projectId`, `title` = `<name> · home`, the home model as `modelSelection`, and `message`:
    ```
-   [install] Installed by <your name> for the user. Name: <name>. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
+   [install] Installed by <your name> for the user. Name: <name>. Role: <role>. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
 7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`. Change nothing else on the project or thread; the bot sets its own icon, title, and default model when its interview ends.
 8. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
@@ -45,7 +45,7 @@ Without T3 tools, stop after step 4 and tell the user to add the folder as a pro
 
 ## Many bots
 
-Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. Your profile lives once, in `~/.t3codes/USER.md`, linked from every bot: the first bot interviews you, later bots only ask what their own job needs, and a correction told to any bot reaches all of them.
+Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. Your profile lives once, in `~/.t3codes/USER.md`, linked from every bot: who you are, your permissions, and which provider, model, and effort to use for each kind of work. The first bot interviews you; later bots only ask what their own role needs, and a correction told to any bot reaches all of them.
 
 ## How it works
 
@@ -56,7 +56,7 @@ Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, me
 | Memory you can read and edit | `~/.t3codes/USER.md` (your profile, shared by all your bots), `me/MEMORY.md` (long-term), `me/NOW.md`, `me/log/` (short-term) |
 | Always on, heartbeat | T3 scheduled task posting `[heartbeat]` into the home thread (`bot-heartbeat`) |
 | Routines and saved skills | T3 scheduled tasks (`bot-routines`); learned skills in `.agents/skills/my-*` |
-| Chief of staff with specialist bots | Workers on any provider and repo (`bot-delegate`); other bots in their own folders (`bot-team`) |
+| Chief of staff with specialist bots | Workers on any provider and repo (`bot-orchestrate`); other bots in their own folders (`bot-team`) |
 | Gets better over time | Nightly `bot-reflect`: consolidate memory, prune, evolve personality from feedback |
 | Approval for external actions | Permissions in `me/USER.md`; anything external or irreversible asks first |
 

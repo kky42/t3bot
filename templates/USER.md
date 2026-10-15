@@ -17,10 +17,16 @@
 - Ask first: <actions that always need approval>
 - Standing OK: <actions the bot may take on its own>
 
-## Workers and cost
-- Default worker: <provider instance / model>
-- Use strong models only for: <...>
+## Workers
+<!-- Provider / model / reasoning effort per kind of work, as in orchestrator_capabilities. Every bot follows this table. -->
+| Work | Provider / model | Effort |
+|---|---|---|
+| Bot home (heartbeats, routines) | | |
+| Routine (search, summaries, simple edits) | | |
+| Code | | |
+| Judgment (planning, review, writing) | | |
 - Max parallel workers:
+- Avoid:
 
 ## Rhythm
 - Working hours:

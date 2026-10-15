@@ -27,7 +27,7 @@ Then:
 3. Record it under Routines in `me/HEARTBEAT.md` (name, schedule in words, scheduledTaskId, bar).
 4. Confirm in one line with the next run time. Offer `run_scheduled_task_now` to test it; a test run does real work.
 
-Runs use the home thread's model. If a routine needs a different model, its instructions should hand the work to a worker (`bot-delegate`) and only summarize.
+Runs use the home thread's model. If a routine needs a different model, its instructions should hand the work to a worker (`bot-orchestrate`) and only summarize.
 
 One-off reminders ("remind me Friday at 3"): a `fixed_time` routine named `reminder-<what>`, prompt starting `[routine] reminder-<what>`, whose instructions end with "then disable this routine with update_scheduled_task enabled=false". Convert the user's timezone to the machine's local time (`date`) and say both.
 

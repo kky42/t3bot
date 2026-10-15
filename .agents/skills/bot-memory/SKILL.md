@@ -11,7 +11,7 @@ Memory is plain Markdown in `me/`, so the user can read and edit it. They are th
 
 | File | Holds | Write when |
 |---|---|---|
-| `USER.md` | The user's profile, shared by all their bots (a link to `~/.t3codes/USER.md`): who they are, goals, style, permissions, cost rules, rhythm, open questions | They state or correct something durable about themselves |
+| `USER.md` | The user's profile, shared by all their bots (a link to `~/.t3codes/USER.md`): who they are, goals, style, permissions, the Workers table, rhythm, open questions | They state or correct something durable about themselves |
 | `MEMORY.md` | Decisions with their reason, lessons, people, projects, where things live; "Role notes": what only your job needs, and any overrides of the profile for you | A decision is made, a lesson is learned, a new person or project appears |
 | `SOUL.md` | Your name, voice, quirks, boundaries, change history | They ask you to change, or `bot-reflect` evolves you |
 | `NOW.md` | Waiting on the user, in flight, follow-ups, ideas | Any open loop opens or closes |
