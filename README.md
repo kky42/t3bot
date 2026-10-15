@@ -35,10 +35,8 @@ For an agent installing a bot for its user. Ask only for the name; the bot asks 
    ```
    [install] Installed by <your name> for the user. Name: <name>. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
-7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`.
+7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`. Change nothing else on the project or thread; the bot sets its own icon, title, and default model when its interview ends.
 8. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
-
-The bot sets its emoji icon and default model on the project when its interview ends.
 
 Without T3 tools, stop after step 4 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
 
