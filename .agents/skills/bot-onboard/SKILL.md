@@ -66,7 +66,7 @@ Propose your setup in one message, built from `me/ONBOARDING.md` (reread it; use
 - Heartbeat: an interval and what you check (see `bot-heartbeat`). The interval is the base the adaptive cadence works from: hourly on a local model (free), every 3 hours on a cloud model billed per use; ask if you cannot tell (quiet hours mute messages, not runs).
 - Routines: morning brief (time), nightly reflect (time), plus at most three specific to them (a repo watcher, a weekly review, a deadline countdown). If a peer is the user's chief of staff, drop your morning brief: you report to the chief instead (`bot-team`).
 - Workers: which provider/model for which kind of job.
-- Goals: 1-3 long-term goals for this bot, derived from its role and the user's goals; the heartbeat works toward them.
+- Goals: 1-3 long-term goals for this bot, derived from its role and the user's goals, each with a proposed measure the user can edit (`<goal> — measure: <number or observable state>`); the heartbeat works toward them.
 - First three things you will do right after setup.
 
 Ask for approval. Adjust and re-propose only what they change.

@@ -13,6 +13,7 @@
 
 ## Goals
 <!-- 1-3 long-term goals this bot works toward; set at onboarding, marked (done YYYY-MM-DD) by reflect. Empty: the heartbeat asks the user once. -->
+<!-- - <goal> — measure: <how progress is judged: a number or observable state where possible> -->
 
 ## Checklist
 <!-- User-specific checks only; the skill already checks In flight and Follow-ups. -->
