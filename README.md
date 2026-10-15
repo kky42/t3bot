@@ -11,39 +11,40 @@ One folder is one bot. Keep bots side by side, never inside another bot's folder
 ### Yourself
 
 ```bash
-git clone <this repo> ~/bots/alice
+git clone https://github.com/kky42/t3bot ~/t3bots/alice
 ```
 
-1. In T3 Code, add `~/bots/alice` as a project.
+1. In T3 Code, add `~/t3bots/alice` as a project.
 2. Open a new thread in it. This thread becomes the bot's home: heartbeats and routines post here and run on this thread's model, so a cheap model keeps them cheap.
 3. Say hi. The bot interviews you and sets itself up.
 
 ### Through any agent
 
-Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It installs the bot without further questions; a pinned home thread appears in the sidebar with the interview already started. The bot then names itself with you and updates its thread title, project name, and icon.
+Give an agent running in T3 Code this repo's URL and say "set up a bot for me". It asks you for the bot's name, offering a few suggestions, then installs it in `~/t3bots/<name>`; a pinned home thread appears in the sidebar with the interview already started. The bot then sets its emoji icon and updates its thread title and project.
 
 ## Agent install
 
-For an agent installing a bot for its user. Do it without questions; the bot asks what it needs in its own interview.
+For an agent installing a bot for its user. Ask only for the name; the bot asks everything else in its own interview.
 
-1. Pick the folder: `~/bots/<name>` if the user named the bot, else the first free `~/bots/bot<N>`. Never inside another bot's folder.
-2. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
-3. `git clone <repo url> <folder>`.
-4. `t3_project_create` with `title` = the folder name and `workspaceRoot` = the absolute folder path.
-5. `t3_thread_launch` with that `projectId`, `title` = `<folder name> · home`, the home model as `modelSelection`, and `message`:
+1. Name: if the user has not named the bot, ask them. Offer three or four short, fun, distinct names that fit what you know of them, and let them type their own. If you have `AskUserQuestion`, ask with it (the names as options; its "Other" field takes their own); otherwise list the names numbered in one message, say any other name works too, and wait for the reply.
+2. Folder: `~/t3bots/<slug>`, where `<slug>` is the name in lowercase with spaces as hyphens and only `a-z`, `0-9`, `-` kept. If that folder exists, ask for another name.
+3. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
+4. `git clone <repo url> <folder>`.
+5. `t3_project_create` with `title` = the name and `workspaceRoot` = the absolute folder path.
+6. `t3_thread_launch` with that `projectId`, `title` = `<name> · home`, the home model as `modelSelection`, and `message`:
    ```
-   [install] Installed by <your name> for the user. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
+   [install] Installed by <your name> for the user. Name: <name>. Notes about the user: <what you already know that the user would otherwise have to repeat, or "none">
    ```
-6. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`.
-7. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
+7. Pin it: `t3_thread_organize` with `action: "pin"` and the new `threadId`.
+8. Tell the user in two lines: the bot is pinned in the sidebar, and the link `[<title>](t3-thread://v1/<threadId>)` where its interview has started.
 
-The bot sets its own name, emoji icon, and default model on the project when its interview ends.
+The bot sets its emoji icon and default model on the project when its interview ends.
 
-Without T3 tools, stop after step 3 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
+Without T3 tools, stop after step 4 and tell the user to add the folder as a project in T3 Code and say hi in a new thread.
 
 ## Many bots
 
-Clone once per bot (`~/bots/alice`, `~/bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. Your profile lives once, in `~/.t3codes/USER.md`, linked from every bot: the first bot interviews you, later bots only ask what their own job needs, and a correction told to any bot reaches all of them.
+Clone once per bot (`~/t3bots/alice`, `~/t3bots/bob`), each with its own job, memory, and routines. Bots find each other through T3 projects and talk by sending messages to each other's home thread (`bot-team`): one bot can hand another a job in its area, and a chief-of-staff bot can route work to specialists. Your profile lives once, in `~/.t3codes/USER.md`, linked from every bot: the first bot interviews you, later bots only ask what their own job needs, and a correction told to any bot reaches all of them.
 
 ## How it works
 
