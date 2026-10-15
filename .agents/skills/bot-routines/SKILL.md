@@ -15,7 +15,7 @@ Pin these down, in one exchange at most:
 - Approval boundary: what the routine may do alone, what it must bring back.
 
 Then:
-1. Routines bind to the thread that creates them, and they belong in the home thread (see `me/HEARTBEAT.md`; your own thread id is `parentThreadId` from `orchestrator_capabilities`). If you are not in the home thread, `t3_thread_send` the home thread one message, `Create routine: <name> | <schedule> | <instructions> | bar: <bar> | never: <limits>`, tell the user it is being set up there, and stop. Otherwise `list_scheduled_tasks` to avoid duplicates, then continue.
+1. Routines bind to the thread that creates them, and they belong in the home thread (see `me/HEARTBEAT.md`; your own thread id is `parentThreadId` from `orchestrator_capabilities`). If you are not in the home thread, `t3_thread_send` the home thread one message that starts with exactly `Create routine:` (that is how the home thread recognizes it), `Create routine: <name> | <schedule> | <instructions> | bar: <bar> | never: <limits>`, tell the user it is being set up there, and stop. Otherwise `list_scheduled_tasks` to avoid duplicates, then continue.
 2. `schedule_task` with `title` `<bot name>: <routine name>`, `bindToCurrentThread: true`, and a prompt in this shape:
    ```
    [routine] <name>

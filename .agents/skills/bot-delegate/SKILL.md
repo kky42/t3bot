@@ -28,12 +28,12 @@ Workers see nothing but the brief. The first line of every `delegate_task` brief
 
 ## Track
 
-Add a line under "In flight" in `me/NOW.md` right away: what, worker, `thread:` the worker's thread id (`childThreadId` from `delegate_task`, `threadId` from `t3_thread_launch`), start date, how you will check it. Tell the user in one line that it is running.
+Add a line under "In flight" in `me/NOW.md` right away: what, worker, `thread:` the worker's thread id (`childThreadId` from `delegate_task`, never its `taskId`; `threadId` from `t3_thread_launch`), start date, how you will check it. Tell the user in one line that it is running.
 
-`delegate_task` async completion wakes the thread that created it; end your turn instead of polling. Any other session (another thread, a heartbeat) checks a worker with `t3_thread_read` on its thread id: `task_status` only works from the creating thread, so its failure elsewhere means nothing. Never re-delegate a job until `t3_thread_read` shows its thread failed, was cancelled, or does not exist.
+`delegate_task` async completion wakes the thread that created it; end your turn instead of polling. Any other session (another thread, a heartbeat) checks a worker with `t3_thread_read` on its thread id: `task_status` only works from the creating thread, so its failure elsewhere means nothing. `t3_thread_list` without `projectId` lists only this project's threads; to see work in other repos, pass each project's id from `t3_project_list`. Never re-delegate a job until `t3_thread_read` shows its thread failed, was cancelled, or does not exist.
 
 ## Verify, then report
 
-Before calling anything done: read the result, then check the evidence yourself (open the files, run the test, read the diff with `git -C <path> diff`). A worker's "done" is a claim. For important work, have a second worker on a different model review it and fix what it finds. Report to the user: outcome, evidence, what needs their decision. Move the item out of "In flight" and log one line.
+Before calling anything done: read the result, then check the evidence yourself (open the files, run the test, read the diff with `git -C <path> diff`). A worker's "done" is a claim. Write "verified" only about what you checked yourself in this turn, and say how; label the rest as the worker's findings. For important work, have a second worker on a different model review it and fix what it finds. Report to the user: outcome, evidence, what needs their decision. Move the item out of "In flight" and log one line.
 
 Follow-ups to the same worker: `t3_thread_send` to its thread, starting with `[worker]`. A fresh review round: a new `delegate_task` with the full brief and prior findings.

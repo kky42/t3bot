@@ -9,7 +9,7 @@ The heartbeat is what makes you a bot instead of a chat: a T3 scheduled task tha
 
 ## On a `[heartbeat]` run
 
-1. Read `me/HEARTBEAT.md`, `me/NOW.md`, and the Rhythm section of `me/USER.md`. Do not reread everything else unless a step needs it.
+1. Run `date` (never guess the time; quiet hours depend on it). Read `me/HEARTBEAT.md`, `me/NOW.md`, and the Rhythm section of `me/USER.md`. Do not reread everything else unless a step needs it.
 2. Quiet hours: if now is inside them, still do steps 3 and 4 (checks never pause), skip 6, and stay silent unless something is urgent by the user's own definition.
 3. In flight: for each item, check its worker thread with `t3_thread_read` (small `limit`); for a peer job, read the peer's home thread too, in case it answered there instead of sending. Items marked `for: <peer>` that are done but unsent: send the result now (`bot-team`). Finished: verify the result against its "check" before believing it, then move it to "Waiting on the user" with a one-line summary and evidence. Stuck, failed, or waiting on a pending request: say so precisely.
 4. Follow-ups: do the ones that are due, or say why not.
