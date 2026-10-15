@@ -15,6 +15,7 @@ else
   fi
 fi
 [ -L me/USER.md ] || echo "PROFILE: me/USER.md is not linked to ~/.t3codes/USER.md - fix it as in \"After an update\" in bot-onboard"
+bin/beat --cadence
 for f in SOUL USER NOW MEMORY; do echo "=== me/$f.md"; cat "me/$f.md" 2>/dev/null; done
 for d in $(date +%F) $(date -v-1d +%F 2>/dev/null || date -d yesterday +%F); do
   [ -f "me/log/$d.md" ] && { echo "=== me/log/$d.md"; cat "me/log/$d.md"; }

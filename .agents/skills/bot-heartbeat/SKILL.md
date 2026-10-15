@@ -9,14 +9,13 @@ The heartbeat is what makes you a bot instead of a chat: a T3 scheduled task tha
 
 ## On a `[heartbeat]` run
 
-1. Run `date` (never guess the time; quiet hours depend on it). Read `me/HEARTBEAT.md`, `me/NOW.md`, and the Rhythm section of `me/USER.md`. Do not reread everything else unless a step needs it.
+1. Run `bin/beat` and do what its `SKILL CHANGED` and `CADENCE` lines say, silently. It prints the time, quiet hours, when the user was last here, and work in flight; never guess those. Read `me/HEARTBEAT.md` and `me/NOW.md`; nothing else unless a step needs it.
 2. Quiet hours: if now is inside them, still do steps 3 and 4 (checks never pause), skip 6, and stay silent unless something is urgent by the user's own definition.
 3. In flight: for each item, check its worker thread with `t3_thread_read` (small `limit`); for a peer job, read the peer's home thread too, in case it answered there instead of sending. Items marked `for: <peer>` that are done but unsent: send the result now (`bot-team`). Finished: verify the result against its "check" before believing it, then move it to "Waiting on the user" with a one-line summary and evidence. Stuck, failed, or waiting on a pending request: say so precisely.
 4. Follow-ups: do the ones that are due, or say why not.
 5. Run the checklist in `me/HEARTBEAT.md`.
 6. Initiative, at most one new job per day and only outside quiet hours: if an open loop, or an idea the user has already seen in a brief, can be advanced without the user (research, a draft, a check), hand it to a worker (`bot-orchestrate`) and record it under "In flight". Never start anything external or irreversible.
 7. Update `NOW.md`. Append one line to today's log only if something happened.
-8. Cadence: set it per the table below if it changed.
 
 Reply:
 - Nothing needs the user: `HEARTBEAT_OK` and nothing else, or `HEARTBEAT_OK - started <thing>` if you started something. No status recap; the user reads these at a glance.
@@ -26,16 +25,7 @@ Never repeat a message you already sent about the same item unless its state cha
 
 ## Cadence
 
-Wake as often as there is something to watch, no more. `me/.last-seen` holds when the user last opened a session; "In flight" in `NOW.md` holds the running work.
-
-| Situation | Heartbeat |
-|---|---|
-| Work in flight | every 30m |
-| User seen in the last 2 days | the base |
-| User away 2 to 7 days | every 4h |
-| User away over 7 days | every 12h |
-
-Change it with `update_scheduled_task` (any thread may), never under 15 minutes, and update "Current" in `me/HEARTBEAT.md`. Wake-up restores the base when the user returns. Never mention cadence changes unless asked.
+You wake as often as there is something to watch: every 30 minutes while work is in flight, the user's base while they were here in the last 2 days, every 4 hours after 2 days away, every 12 hours after a week. `bin/beat` computes this from `me/.last-seen` (written by `bin/wake`) and "In flight"; `bin/wake` restores the base when the user returns. Never mention cadence changes unless asked.
 
 ## On a `[routine] <name>` run
 
@@ -50,8 +40,8 @@ Runs inherit the provider and model of the thread they post into, so cost depend
 3. Create it with `schedule_task`:
    - `title`: `<bot name> heartbeat`
    - `schedule`: `{"type":"interval","everyMs":3600000}` (default; the user's choice wins; never under 15 minutes)
-   - `prompt`: exactly `[heartbeat] Read .agents/skills/bot-heartbeat/SKILL.md now and do every step; quiet hours mute messages, not checks.` Long-lived threads keep old instructions in context, so the prompt makes every run read the current file. Put user-specific checks in the checklist in `me/HEARTBEAT.md`, never in the prompt, so they can change without touching the schedule.
+   - `prompt`: exactly `[heartbeat] Run bin/beat, then do every step of .agents/skills/bot-heartbeat/SKILL.md; quiet hours mute messages, not checks.` Long-lived threads keep old instructions in context; `bin/beat` says when the skill changed. Put user-specific checks in the checklist in `me/HEARTBEAT.md`, never in the prompt, so they can change without touching the schedule.
    - `bindToCurrentThread`: true
-4. Record the `scheduledTaskId` under Routines and the cadence as Base and Current in `me/HEARTBEAT.md`. Tell the user the next run time.
+4. Record it under Routines in `me/HEARTBEAT.md` as `- heartbeat | every <n>m | scheduledTaskId: <id>`, and the interval as Base and Current under Cadence. Tell the user the next run time.
 
 To pause: `update_scheduled_task` with `enabled: false`, note it in `me/HEARTBEAT.md`.

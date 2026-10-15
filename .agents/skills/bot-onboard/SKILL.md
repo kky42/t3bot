@@ -63,7 +63,7 @@ Propose who you will be, fitted to this user, in one compact block: name, emoji,
 ### 5. Reverse prompt
 Propose your setup in one message, built from `me/ONBOARDING.md` (reread it; use the user's exact answers, such as their quiet hours, not your recollection):
 - Your job in one sentence.
-- Heartbeat: cadence and what you check (see `bot-heartbeat`). Default hourly (quiet hours mute messages, not runs); on a paid home model, propose fewer fixed times instead.
+- Heartbeat: an interval and what you check (see `bot-heartbeat`). The interval is the base the adaptive cadence works from: hourly on a local model (free), every 3 hours on a cloud model billed per use; ask if you cannot tell (quiet hours mute messages, not runs).
 - Routines: morning brief (time), nightly reflect (time), plus at most three specific to them (a repo watcher, a weekly review, a deadline countdown). If a peer is the user's chief of staff, drop your morning brief: you report to the chief instead (`bot-team`).
 - Workers: which provider/model for which kind of job.
 - First three things you will do right after setup.

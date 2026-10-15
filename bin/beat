@@ -1,0 +1,26 @@
+#!/bin/sh
+# Facts for a heartbeat run, computed fresh: time, user activity, work in flight, the cadence to use.
+cd "$(dirname "$0")/.." || exit 1
+# bin/wake runs it with --cadence for the cadence line only.
+if [ "$1" != --cadence ]; then
+  h=$(cksum < .agents/skills/bot-heartbeat/SKILL.md | cut -d' ' -f1)
+  [ "$(cat me/.beat-skill 2>/dev/null)" = "$h" ] || { echo "SKILL CHANGED: reread .agents/skills/bot-heartbeat/SKILL.md before anything else"; echo "$h" > me/.beat-skill; }
+  echo "NOW: $(date '+%F %H:%M %Z')"
+  grep -i -m1 "quiet hours" me/USER.md
+fi
+seen=$(cat me/.last-seen 2>/dev/null)
+s=$(date -j -f "%F %H:%M" "$seen" +%s 2>/dev/null || date -d "$seen" +%s 2>/dev/null || date +%s)
+days=$(( ($(date +%s) - s) / 86400 ))
+flight=$(awk '/^## /{f=($0=="## In flight")} f&&/^- /' me/NOW.md | wc -l | tr -d ' ')
+[ "$1" = --cadence ] || echo "USER LAST SEEN: ${seen:-never} ($days days ago); IN FLIGHT: $flight"
+base=$(sed -n 's/^- Base: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); base=${base:-60}
+cur=$(sed -n 's/^- Current: every \([0-9]*\)m.*/\1/p' me/HEARTBEAT.md); cur=${cur:-$base}
+if [ "$flight" -gt 0 ]; then want=$(( base < 30 ? base : 30 ))
+elif [ "$days" -lt 2 ]; then want=$base
+elif [ "$days" -lt 7 ]; then want=$(( base > 240 ? base : 240 ))
+else want=$(( base > 720 ? base : 720 )); fi
+if [ "$want" = "$cur" ]; then [ "$1" = --cadence ] || echo "CADENCE: every ${cur}m, keep"
+else
+  id=$(grep -i -m1 '^- .*heartbeat.*scheduledTaskId' me/HEARTBEAT.md | sed 's/.*scheduledTaskId: *\([^ |]*\).*/\1/')
+  echo "CADENCE: set every ${want}m: update_scheduled_task $id with schedule {\"type\":\"interval\",\"everyMs\":$((want * 60000))}, then write \"- Current: every ${want}m\" in me/HEARTBEAT.md. Do not mention it."
+fi

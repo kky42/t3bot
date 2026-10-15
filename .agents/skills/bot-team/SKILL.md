@@ -7,6 +7,8 @@ description: Work with the user's other bots - find them, message them, hand the
 
 Each bot is its own folder with its own `me/`, registered as its own T3 project. Bots share the user's profile (`~/.t3codes/USER.md`) but not their minds: you never write another bot's `me/`, and read only its `SOUL.md` and `HEARTBEAT.md` (who it is, where it lives).
 
+Talk to peers only with `t3_thread_send` to their home thread, never a harness's own messaging tool: peers may run on another provider and only read their T3 thread.
+
 ## Find your peers
 
 1. `t3_project_list`. For each `workspaceRoot` other than this folder, check that `<root>/me/SOUL.md` exists and `<root>/AGENTS.md` starts with `# You are the bot`.
