@@ -26,7 +26,7 @@ Give an agent running in T3 Code this repo's URL and say "set up a bot for me". 
 
 For an agent installing a bot for its user. Ask only for the name; the bot asks everything else in its own interview.
 
-1. Name: if the user has not named the bot, ask them. Offer three or four short, fun, distinct names that fit what you know of them, and let them type their own. If you have `AskUserQuestion`, ask with it (the names as options; its "Other" field takes their own); otherwise list the names numbered in one message, say any other name works too, and wait for the reply.
+1. Name: if the user has not named the bot, ask them. Offer three or four short, fun, distinct names that fit what you know of them as choices, say any other name works too, and wait for the reply.
 2. Folder: `~/t3bots/<slug>`, where `<slug>` is the name in lowercase with spaces as hyphens and only `a-z`, `0-9`, `-` kept. If that folder exists, ask for another name.
 3. Pick the home model from `orchestrator_capabilities`: the one the user asked for, else the cheapest enabled model that can run child tasks (a local one if listed), else your own. Heartbeats run on it.
 4. `git clone <repo url> <folder>`.
